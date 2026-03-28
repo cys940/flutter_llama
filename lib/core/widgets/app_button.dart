@@ -1,14 +1,6 @@
 import 'package:flutter/material.dart';
 
 class AppButton extends StatelessWidget {
-  final String text;
-  final VoidCallback? onPressed;
-  final bool isLoading;
-  final Widget? icon;
-  final Color? backgroundColor;
-  final Color? foregroundColor;
-  final double? width;
-
   const AppButton({
     super.key,
     required this.text,
@@ -19,6 +11,14 @@ class AppButton extends StatelessWidget {
     this.foregroundColor,
     this.width,
   });
+
+  final String text;
+  final VoidCallback? onPressed;
+  final bool isLoading;
+  final Widget? icon;
+  final Color? backgroundColor;
+  final Color? foregroundColor;
+  final double? width;
 
   @override
   Widget build(BuildContext context) {

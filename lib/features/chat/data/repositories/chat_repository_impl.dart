@@ -6,11 +6,11 @@ import '../../domain/repositories/chat_repository.dart';
 import '../datasources/llama_data_source.dart';
 
 class ChatRepositoryImpl implements ChatRepository {
+  ChatRepositoryImpl(this._dataSource);
+
   final LlamaDataSource _dataSource;
   final List<ChatMessage> _messages = [];
   final _uuid = const Uuid();
-
-  ChatRepositoryImpl(this._dataSource);
 
   @override
   Future<void> loadModel(String modelPath) async {
@@ -29,8 +29,9 @@ class ChatRepositoryImpl implements ChatRepository {
     _messages.add(userMessage);
 
     // AI의 응답을 스트림으로 받아오기
-    String fullResponse = '';
-    await for (final chunk in _dataSource.generateResponse(message)) {
+    var fullResponse = '';
+    final responses = _dataSource.generateResponse(message);
+    await for (final chunk in responses) {
       fullResponse += chunk;
       yield chunk;
     }

@@ -58,7 +58,7 @@ class ChatNotifier extends _$ChatNotifier {
       final repository = ref.read(chatRepositoryProvider);
       final responseStream = repository.sendMessageStream(text);
 
-      String currentAiResponse = '';
+      var currentAiResponse = '';
       final aiMessageId = const Uuid().v4();
 
       await for (final chunk in responseStream) {

@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
 
 class ChatBubble extends StatelessWidget {
-  final String message;
-  final bool isUser;
-  final DateTime? timestamp;
-
   const ChatBubble({
     super.key,
     required this.message,
     required this.isUser,
     this.timestamp,
   });
+
+  final String message;
+  final bool isUser;
+  final DateTime? timestamp;
 
   @override
   Widget build(BuildContext context) {

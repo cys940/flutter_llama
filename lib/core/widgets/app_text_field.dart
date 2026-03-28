@@ -2,17 +2,6 @@ import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
 
 class AppTextField extends StatelessWidget {
-  final TextEditingController? controller;
-  final String? hintText;
-  final Widget? suffixIcon;
-  final Widget? prefixIcon;
-  final bool obscureText;
-  final TextInputType? keyboardType;
-  final TextInputAction? textInputAction;
-  final ValueChanged<String>? onSubmitted;
-  final bool autofocus;
-  final int maxLines;
-
   const AppTextField({
     super.key,
     this.controller,
@@ -27,6 +16,16 @@ class AppTextField extends StatelessWidget {
     this.maxLines = 1,
   });
 
+  final TextEditingController? controller;
+  final String? hintText;
+  final Widget? suffixIcon;
+  final Widget? prefixIcon;
+  final bool obscureText;
+  final TextInputType? keyboardType;
+  final TextInputAction? textInputAction;
+  final ValueChanged<String>? onSubmitted;
+  final bool autofocus;
+  final int maxLines;
   @override
   Widget build(BuildContext context) {
     return TextField(

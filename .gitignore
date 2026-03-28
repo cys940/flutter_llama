@@ -69,3 +69,15 @@ build/web/
 
 # Local history
 .history/
+
+# FVM
+.fvm/flutter_sdk
+.fvm/fvm_config.json
+
+# AI Agents
+.agents/
+.serena/
+.gemini/
+.ai/
+fsm.json
+prompt.txt
