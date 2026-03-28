@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$SessionEntity {
 
-@JsonKey(name: 'id') String get sessionId; String get title; DateTime get createdAt; DateTime get lastMessageAt; List<MessageEntity> get messages;
+@JsonKey(name: 'id') String get sessionId; String get title; DateTime get createdAt; DateTime get lastMessageAt;@JsonKey(includeToJson: false) List<MessageEntity> get messages; bool get isMeeting; MeetingMetadata? get meetingMetadata;
 /// Create a copy of SessionEntity
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $SessionEntityCopyWith<SessionEntity> get copyWith => _$SessionEntityCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SessionEntity&&(identical(other.sessionId, sessionId) || other.sessionId == sessionId)&&(identical(other.title, title) || other.title == title)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.lastMessageAt, lastMessageAt) || other.lastMessageAt == lastMessageAt)&&const DeepCollectionEquality().equals(other.messages, messages));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SessionEntity&&(identical(other.sessionId, sessionId) || other.sessionId == sessionId)&&(identical(other.title, title) || other.title == title)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.lastMessageAt, lastMessageAt) || other.lastMessageAt == lastMessageAt)&&const DeepCollectionEquality().equals(other.messages, messages)&&(identical(other.isMeeting, isMeeting) || other.isMeeting == isMeeting)&&(identical(other.meetingMetadata, meetingMetadata) || other.meetingMetadata == meetingMetadata));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,sessionId,title,createdAt,lastMessageAt,const DeepCollectionEquality().hash(messages));
+int get hashCode => Object.hash(runtimeType,sessionId,title,createdAt,lastMessageAt,const DeepCollectionEquality().hash(messages),isMeeting,meetingMetadata);
 
 @override
 String toString() {
-  return 'SessionEntity(sessionId: $sessionId, title: $title, createdAt: $createdAt, lastMessageAt: $lastMessageAt, messages: $messages)';
+  return 'SessionEntity(sessionId: $sessionId, title: $title, createdAt: $createdAt, lastMessageAt: $lastMessageAt, messages: $messages, isMeeting: $isMeeting, meetingMetadata: $meetingMetadata)';
 }
 
 
@@ -48,11 +48,11 @@ abstract mixin class $SessionEntityCopyWith<$Res>  {
   factory $SessionEntityCopyWith(SessionEntity value, $Res Function(SessionEntity) _then) = _$SessionEntityCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(name: 'id') String sessionId, String title, DateTime createdAt, DateTime lastMessageAt, List<MessageEntity> messages
+@JsonKey(name: 'id') String sessionId, String title, DateTime createdAt, DateTime lastMessageAt,@JsonKey(includeToJson: false) List<MessageEntity> messages, bool isMeeting, MeetingMetadata? meetingMetadata
 });
 
 
-
+$MeetingMetadataCopyWith<$Res>? get meetingMetadata;
 
 }
 /// @nodoc
@@ -65,17 +65,31 @@ class _$SessionEntityCopyWithImpl<$Res>
 
 /// Create a copy of SessionEntity
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? sessionId = null,Object? title = null,Object? createdAt = null,Object? lastMessageAt = null,Object? messages = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? sessionId = null,Object? title = null,Object? createdAt = null,Object? lastMessageAt = null,Object? messages = null,Object? isMeeting = null,Object? meetingMetadata = freezed,}) {
   return _then(_self.copyWith(
 sessionId: null == sessionId ? _self.sessionId : sessionId // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
 as String,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime,lastMessageAt: null == lastMessageAt ? _self.lastMessageAt : lastMessageAt // ignore: cast_nullable_to_non_nullable
 as DateTime,messages: null == messages ? _self.messages : messages // ignore: cast_nullable_to_non_nullable
-as List<MessageEntity>,
+as List<MessageEntity>,isMeeting: null == isMeeting ? _self.isMeeting : isMeeting // ignore: cast_nullable_to_non_nullable
+as bool,meetingMetadata: freezed == meetingMetadata ? _self.meetingMetadata : meetingMetadata // ignore: cast_nullable_to_non_nullable
+as MeetingMetadata?,
   ));
 }
+/// Create a copy of SessionEntity
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$MeetingMetadataCopyWith<$Res>? get meetingMetadata {
+    if (_self.meetingMetadata == null) {
+    return null;
+  }
 
+  return $MeetingMetadataCopyWith<$Res>(_self.meetingMetadata!, (value) {
+    return _then(_self.copyWith(meetingMetadata: value));
+  });
+}
 }
 
 
@@ -157,10 +171,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'id')  String sessionId,  String title,  DateTime createdAt,  DateTime lastMessageAt,  List<MessageEntity> messages)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'id')  String sessionId,  String title,  DateTime createdAt,  DateTime lastMessageAt, @JsonKey(includeToJson: false)  List<MessageEntity> messages,  bool isMeeting,  MeetingMetadata? meetingMetadata)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SessionEntity() when $default != null:
-return $default(_that.sessionId,_that.title,_that.createdAt,_that.lastMessageAt,_that.messages);case _:
+return $default(_that.sessionId,_that.title,_that.createdAt,_that.lastMessageAt,_that.messages,_that.isMeeting,_that.meetingMetadata);case _:
   return orElse();
 
 }
@@ -178,10 +192,10 @@ return $default(_that.sessionId,_that.title,_that.createdAt,_that.lastMessageAt,
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'id')  String sessionId,  String title,  DateTime createdAt,  DateTime lastMessageAt,  List<MessageEntity> messages)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'id')  String sessionId,  String title,  DateTime createdAt,  DateTime lastMessageAt, @JsonKey(includeToJson: false)  List<MessageEntity> messages,  bool isMeeting,  MeetingMetadata? meetingMetadata)  $default,) {final _that = this;
 switch (_that) {
 case _SessionEntity():
-return $default(_that.sessionId,_that.title,_that.createdAt,_that.lastMessageAt,_that.messages);case _:
+return $default(_that.sessionId,_that.title,_that.createdAt,_that.lastMessageAt,_that.messages,_that.isMeeting,_that.meetingMetadata);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -198,10 +212,10 @@ return $default(_that.sessionId,_that.title,_that.createdAt,_that.lastMessageAt,
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'id')  String sessionId,  String title,  DateTime createdAt,  DateTime lastMessageAt,  List<MessageEntity> messages)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'id')  String sessionId,  String title,  DateTime createdAt,  DateTime lastMessageAt, @JsonKey(includeToJson: false)  List<MessageEntity> messages,  bool isMeeting,  MeetingMetadata? meetingMetadata)?  $default,) {final _that = this;
 switch (_that) {
 case _SessionEntity() when $default != null:
-return $default(_that.sessionId,_that.title,_that.createdAt,_that.lastMessageAt,_that.messages);case _:
+return $default(_that.sessionId,_that.title,_that.createdAt,_that.lastMessageAt,_that.messages,_that.isMeeting,_that.meetingMetadata);case _:
   return null;
 
 }
@@ -213,7 +227,7 @@ return $default(_that.sessionId,_that.title,_that.createdAt,_that.lastMessageAt,
 @JsonSerializable()
 
 class _SessionEntity implements SessionEntity {
-  const _SessionEntity({@JsonKey(name: 'id') required this.sessionId, required this.title, required this.createdAt, required this.lastMessageAt, final  List<MessageEntity> messages = const []}): _messages = messages;
+  const _SessionEntity({@JsonKey(name: 'id') required this.sessionId, required this.title, required this.createdAt, required this.lastMessageAt, @JsonKey(includeToJson: false) final  List<MessageEntity> messages = const [], this.isMeeting = false, this.meetingMetadata}): _messages = messages;
   factory _SessionEntity.fromJson(Map<String, dynamic> json) => _$SessionEntityFromJson(json);
 
 @override@JsonKey(name: 'id') final  String sessionId;
@@ -221,12 +235,14 @@ class _SessionEntity implements SessionEntity {
 @override final  DateTime createdAt;
 @override final  DateTime lastMessageAt;
  final  List<MessageEntity> _messages;
-@override@JsonKey() List<MessageEntity> get messages {
+@override@JsonKey(includeToJson: false) List<MessageEntity> get messages {
   if (_messages is EqualUnmodifiableListView) return _messages;
   // ignore: implicit_dynamic_type
   return EqualUnmodifiableListView(_messages);
 }
 
+@override@JsonKey() final  bool isMeeting;
+@override final  MeetingMetadata? meetingMetadata;
 
 /// Create a copy of SessionEntity
 /// with the given fields replaced by the non-null parameter values.
@@ -241,16 +257,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SessionEntity&&(identical(other.sessionId, sessionId) || other.sessionId == sessionId)&&(identical(other.title, title) || other.title == title)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.lastMessageAt, lastMessageAt) || other.lastMessageAt == lastMessageAt)&&const DeepCollectionEquality().equals(other._messages, _messages));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SessionEntity&&(identical(other.sessionId, sessionId) || other.sessionId == sessionId)&&(identical(other.title, title) || other.title == title)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.lastMessageAt, lastMessageAt) || other.lastMessageAt == lastMessageAt)&&const DeepCollectionEquality().equals(other._messages, _messages)&&(identical(other.isMeeting, isMeeting) || other.isMeeting == isMeeting)&&(identical(other.meetingMetadata, meetingMetadata) || other.meetingMetadata == meetingMetadata));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,sessionId,title,createdAt,lastMessageAt,const DeepCollectionEquality().hash(_messages));
+int get hashCode => Object.hash(runtimeType,sessionId,title,createdAt,lastMessageAt,const DeepCollectionEquality().hash(_messages),isMeeting,meetingMetadata);
 
 @override
 String toString() {
-  return 'SessionEntity(sessionId: $sessionId, title: $title, createdAt: $createdAt, lastMessageAt: $lastMessageAt, messages: $messages)';
+  return 'SessionEntity(sessionId: $sessionId, title: $title, createdAt: $createdAt, lastMessageAt: $lastMessageAt, messages: $messages, isMeeting: $isMeeting, meetingMetadata: $meetingMetadata)';
 }
 
 
@@ -261,11 +277,11 @@ abstract mixin class _$SessionEntityCopyWith<$Res> implements $SessionEntityCopy
   factory _$SessionEntityCopyWith(_SessionEntity value, $Res Function(_SessionEntity) _then) = __$SessionEntityCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(name: 'id') String sessionId, String title, DateTime createdAt, DateTime lastMessageAt, List<MessageEntity> messages
+@JsonKey(name: 'id') String sessionId, String title, DateTime createdAt, DateTime lastMessageAt,@JsonKey(includeToJson: false) List<MessageEntity> messages, bool isMeeting, MeetingMetadata? meetingMetadata
 });
 
 
-
+@override $MeetingMetadataCopyWith<$Res>? get meetingMetadata;
 
 }
 /// @nodoc
@@ -278,18 +294,32 @@ class __$SessionEntityCopyWithImpl<$Res>
 
 /// Create a copy of SessionEntity
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? sessionId = null,Object? title = null,Object? createdAt = null,Object? lastMessageAt = null,Object? messages = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? sessionId = null,Object? title = null,Object? createdAt = null,Object? lastMessageAt = null,Object? messages = null,Object? isMeeting = null,Object? meetingMetadata = freezed,}) {
   return _then(_SessionEntity(
 sessionId: null == sessionId ? _self.sessionId : sessionId // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
 as String,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime,lastMessageAt: null == lastMessageAt ? _self.lastMessageAt : lastMessageAt // ignore: cast_nullable_to_non_nullable
 as DateTime,messages: null == messages ? _self._messages : messages // ignore: cast_nullable_to_non_nullable
-as List<MessageEntity>,
+as List<MessageEntity>,isMeeting: null == isMeeting ? _self.isMeeting : isMeeting // ignore: cast_nullable_to_non_nullable
+as bool,meetingMetadata: freezed == meetingMetadata ? _self.meetingMetadata : meetingMetadata // ignore: cast_nullable_to_non_nullable
+as MeetingMetadata?,
   ));
 }
 
+/// Create a copy of SessionEntity
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$MeetingMetadataCopyWith<$Res>? get meetingMetadata {
+    if (_self.meetingMetadata == null) {
+    return null;
+  }
 
+  return $MeetingMetadataCopyWith<$Res>(_self.meetingMetadata!, (value) {
+    return _then(_self.copyWith(meetingMetadata: value));
+  });
+}
 }
 
 // dart format on

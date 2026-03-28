@@ -49,40 +49,49 @@ class HistoryScreen extends StatelessWidget {
   Widget _buildAppBar(BuildContext context, ColorScheme colorScheme, TextTheme textTheme) {
     return SliverAppBar(
       pinned: true,
-      backgroundColor: colorScheme.surface,
+      backgroundColor: colorScheme.surface.withValues(alpha: 0.8),
       elevation: 0,
       centerTitle: false,
       title: context.isMobile 
-        ? SignatureGradient(
-            child: Text('Llama AI', style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800)),
-          )
-        : Container(
-            width: 400,
-            height: 44,
-            decoration: BoxDecoration(
-              color: colorScheme.surfaceContainerHigh,
-              borderRadius: BorderRadius.circular(22),
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
+          ? SignatureGradient(
+              child: Text(
+                'Llama AI',
+                style: textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            )
+          : Row(
               children: [
-                Icon(LucideIcons.search, size: 18, color: colorScheme.onSurfaceVariant),
+                const SizedBox(width: 20),
+                SignatureGradient(
+                  child: Text(
+                    'Llama AI',
+                    style: textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
                 const SizedBox(width: 12),
-                Expanded(
-                  child: TextField(
-                    decoration: InputDecoration(
-                      hintText: 'Search conversations...',
-                      hintStyle: TextStyle(color: colorScheme.onSurfaceVariant.withValues(alpha: 0.5), fontSize: 13),
-                      border: InputBorder.none,
-                      filled: false,
-                      contentPadding: EdgeInsets.zero,
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: colorScheme.primary.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: colorScheme.primary.withValues(alpha: 0.2)),
+                  ),
+                  child: Text(
+                    'History',
+                    style: textTheme.labelMedium?.copyWith(
+                      color: colorScheme.primary,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
               ],
             ),
-          ),
       actions: [
+        IconButton(icon: const Icon(LucideIcons.search), onPressed: () {}),
         IconButton(icon: const Icon(LucideIcons.user), onPressed: () {}),
         const SizedBox(width: 8),
       ],
@@ -99,14 +108,14 @@ class HistoryScreen extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Discovery', style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w900, fontSize: 28)),
+                Text('탐색', style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w900, fontSize: 28)),
                 const SizedBox(height: 4),
-                Text('Ignite your curiosity with curated AI templates.', style: textTheme.bodyMedium),
+                Text('큐레이팅된 AI 템플릿으로 당신의 호기심을 자극하세요.', style: textTheme.bodyMedium),
               ],
             ),
             TextButton(
               onPressed: () {}, 
-              child: Text('View All', style: TextStyle(color: colorScheme.primary, fontWeight: FontWeight.bold)),
+              child: Text('모두 보기', style: TextStyle(color: colorScheme.primary, fontWeight: FontWeight.bold)),
             ),
           ],
         ),
@@ -124,22 +133,22 @@ class HistoryScreen extends StatelessWidget {
               children: [
                 _buildTemplateCard(
                   context, 
-                  'Content Strategy', 
-                  'Generate high-impact editorial calendars and social media hooks.',
+                  '콘텐츠 전략', 
+                  '핵심적인 에디토리얼 캘린더와 소셜 미디어 후크를 생성합니다.',
                   LucideIcons.sparkles,
                   colorScheme.primary,
                 ),
                 _buildTemplateCard(
                   context, 
-                  'Code Architect', 
-                  'Debug complex microservices or refactor legacy Python patterns.',
+                  '코드 아키텍트', 
+                  '복잡한 마이크로서비스를 디버깅하거나 레거시 패턴을 리팩토링합니다.',
                   LucideIcons.terminal,
                   colorScheme.secondary,
                 ),
                 _buildTemplateCard(
                   context, 
-                  'Mental Models', 
-                  'Deconstruct hard problems using First Principles or Inversion techniques.',
+                  '사고 모델', 
+                  '제1원칙 또는 역발상 기법을 사용하여 어려운 문제를 해체합니다.',
                   LucideIcons.brain,
                   colorScheme.tertiary,
                 ),
@@ -178,7 +187,7 @@ class HistoryScreen extends StatelessWidget {
           const SizedBox(height: 16),
           Row(
             children: [
-              Text('TRY TEMPLATE', style: TextStyle(color: accent, fontWeight: FontWeight.w900, fontSize: 10, letterSpacing: 1.2)),
+              Text('템플릿 사용하기', style: TextStyle(color: accent, fontWeight: FontWeight.w900, fontSize: 10, letterSpacing: 1.2)),
               const SizedBox(width: 8),
               Icon(LucideIcons.arrowRight, color: accent, size: 14),
             ],
@@ -191,7 +200,7 @@ class HistoryScreen extends StatelessWidget {
   Widget _buildRecentSessionsHeader(BuildContext context, ColorScheme colorScheme, TextTheme textTheme) {
     return Row(
       children: [
-        Text('Recent Sessions', style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w900)),
+        Text('최근 세션', style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w900)),
         const SizedBox(width: 12),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
@@ -199,7 +208,7 @@ class HistoryScreen extends StatelessWidget {
             color: colorScheme.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(6),
           ),
-          child: Text('24 TOTAL', style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: colorScheme.onSurfaceVariant, letterSpacing: 1.0)),
+          child: Text('총 24개', style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: colorScheme.onSurfaceVariant, letterSpacing: 1.0)),
         ),
       ],
     );
@@ -223,7 +232,7 @@ class HistoryScreen extends StatelessWidget {
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
               side: BorderSide(color: AppColors.outlineVariant),
             ),
-            child: Text('LOAD OLDER CONVERSATIONS', style: TextStyle(color: colorScheme.onSurfaceVariant, fontWeight: FontWeight.bold, fontSize: 13, letterSpacing: 1.0)),
+            child: Text('이전 대화 불러오기', style: TextStyle(color: colorScheme.onSurfaceVariant, fontWeight: FontWeight.bold, fontSize: 13, letterSpacing: 1.0)),
           ),
         ),
       ],
@@ -282,10 +291,10 @@ class HistoryScreen extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            _buildNavItem(context, LucideIcons.messageCircle, 'CHAT', false),
-            _buildNavItem(context, LucideIcons.history, 'HISTORY', true),
-            _buildNavItem(context, LucideIcons.compass, 'EXPLORE', false),
-            _buildNavItem(context, LucideIcons.settings, 'SETTINGS', false),
+            _buildNavItem(context, LucideIcons.messageCircle, '채팅', false),
+            _buildNavItem(context, LucideIcons.history, '히스토리', true),
+            _buildNavItem(context, LucideIcons.compass, '탐색', false),
+            _buildNavItem(context, LucideIcons.settings, '설정', false),
           ],
         ),
       ),

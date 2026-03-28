@@ -34,11 +34,36 @@ class GlassDecorator extends StatelessWidget {
             color: color.withValues(alpha: opacity),
             borderRadius: effectiveRadius,
             border: useGhostBorder 
-                ? Border.all(color: AppColors.outlineVariant) // 15% opacity ghost border
+                ? Border.all(color: AppColors.outlineVariant.withValues(alpha: 0.15)) 
                 : null,
           ),
           child: child,
         ),
+      ),
+    );
+  }
+}
+
+/// 디자인 가이드에 최적화된 유리 질감 카드 위젯입니다.
+class GlassCard extends StatelessWidget {
+  const GlassCard({
+    super.key,
+    required this.child,
+    this.padding = const EdgeInsets.all(16.0),
+    this.borderRadius,
+  });
+
+  final Widget child;
+  final EdgeInsetsGeometry padding;
+  final BorderRadius? borderRadius;
+
+  @override
+  Widget build(BuildContext context) {
+    return GlassDecorator(
+      borderRadius: borderRadius,
+      child: Padding(
+        padding: padding,
+        child: child,
       ),
     );
   }

@@ -1,5 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:uuid/uuid.dart';
+import 'package:talker_flutter/talker_flutter.dart';
 import '../../../../core/di/injection.dart';
 import '../../data/datasources/llama_data_source.dart';
 import '../../domain/entities/message_entity.dart';
@@ -22,6 +23,8 @@ ModelRepository modelRepository(Ref ref) => getIt<ModelRepository>();
 
 @riverpod
 class ChatNotifier extends _$ChatNotifier {
+  final Talker _talker = getIt<Talker>();
+
   @override
   ChatState build() {
     // 앱 시작 시 초기 데이터 로드
@@ -32,13 +35,14 @@ class ChatNotifier extends _$ChatNotifier {
     return const ChatState();
   }
 
-  /// 기기 내 세선 목록을 불러옵니다.
+  /// 기기 내 세션 목록을 불러옵니다.
   Future<void> fetchSessions() async {
     try {
       final sessions = await ref.read(chatRepositoryProvider).getSessions();
-      state = state.copyWith(sessions: sessions);
-    } catch (e) {
-      // 에러 처리 (로그 출력 등)
+      state = state.copyWith(sessions: sessions, error: null);
+    } catch (e, st) {
+      _talker.handle(e, st, '[ChatNotifier] Failed to fetch sessions');
+      state = state.copyWith(error: '채팅 기록을 불러오는 중 오류가 발생했습니다: $e');
     }
   }
 
@@ -56,15 +60,19 @@ class ChatNotifier extends _$ChatNotifier {
           modelPath: modelPath,
           isLoading: false,
         );
+        _talker.info('[ChatNotifier] Model initialized at $modelPath');
       } else {
         final modelsDir = await modelRepository.getModelsDirectory();
+        final errorMsg = '모델 파일을 찾을 수 없습니다. \n다음 경로에 .gguf 파일을 넣어주세요: \n${modelsDir.path}';
         state = state.copyWith(
           isModelLoaded: false,
-          modelError: '모델 파일을 찾을 수 없습니다. \n다음 경로에 .gguf 파일을 넣어주세요: \n${modelsDir.path}',
+          modelError: errorMsg,
           isLoading: false,
         );
+        _talker.warning('[ChatNotifier] $errorMsg');
       }
-    } catch (e) {
+    } catch (e, st) {
+      _talker.handle(e, st, '[ChatNotifier] Error during model initialization');
       state = state.copyWith(
         isModelLoaded: false,
         modelError: '모델 로드 중 오류 발생: $e',
@@ -75,29 +83,38 @@ class ChatNotifier extends _$ChatNotifier {
 
   /// 새로운 세션을 시작합니다.
   Future<void> startNewSession() async {
-    final sessionId = const Uuid().v4();
-    final newSession = SessionEntity(
-      sessionId: sessionId,
-      title: 'New Chat',
-      createdAt: DateTime.now(),
-      lastMessageAt: DateTime.now(),
-    );
-    
-    // 엔진의 대화 세션 초기화
-    ref.read(chatRepositoryProvider).resetSession();
-    
-    await ref.read(chatRepositoryProvider).createSession(newSession);
-    await fetchSessions(); // 목록 갱신
-    
-    state = state.copyWith(
-      messages: [],
-      sessionId: sessionId,
-    );
+    try {
+      final sessionId = const Uuid().v4();
+      final newSession = SessionEntity(
+        sessionId: sessionId,
+        title: 'New Chat',
+        createdAt: DateTime.now(),
+        lastMessageAt: DateTime.now(),
+      );
+      
+      // 엔진의 대화 세션 초기화
+      ref.read(chatRepositoryProvider).resetSession();
+      
+      await ref.read(chatRepositoryProvider).createSession(newSession);
+      
+      state = state.copyWith(
+        messages: [],
+        sessionId: sessionId,
+        sessions: [newSession, ...state.sessions],
+        error: null,
+      );
+      
+      // 백그라운드에서 최신 정렬 순서등을 반영하기 위해 목록 갱신
+      fetchSessions();
+    } catch (e, st) {
+       _talker.handle(e, st, '[ChatNotifier] Failed to start new session');
+       state = state.copyWith(error: '새 대화를 시작할 수 없습니다: $e');
+    }
   }
 
   /// 기존 세션을 로드합니다.
   Future<void> loadSession(String sessionId) async {
-    state = state.copyWith(isLoading: true);
+    state = state.copyWith(isLoading: true, error: null);
     try {
       final messages = await ref.read(chatRepositoryProvider).getMessages(sessionId);
       
@@ -109,25 +126,32 @@ class ChatNotifier extends _$ChatNotifier {
         sessionId: sessionId,
         isLoading: false,
       );
-    } catch (e) {
-      state = state.copyWith(isLoading: false);
-      rethrow;
+    } catch (e, st) {
+      _talker.handle(e, st, '[ChatNotifier] Failed to load session $sessionId');
+      state = state.copyWith(
+        isLoading: false,
+        error: '대화 내용을 불러올 수 없습니다: $e',
+      );
     }
   }
 
   Future<void> loadModel(String modelPath) async {
-    state = state.copyWith(isLoading: true);
+    state = state.copyWith(isLoading: true, modelError: null);
     try {
       await ref.read(chatRepositoryProvider).loadModel(modelPath);
       state = state.copyWith(isLoading: false, isModelLoaded: true, modelPath: modelPath);
+      _talker.info('[ChatNotifier] Manual model load success: $modelPath');
       
       // 모델 로드 시 세션이 없다면 새로 시작
       if (state.sessionId == null) {
         await startNewSession();
       }
-    } catch (e) {
-      state = state.copyWith(isLoading: false);
-      rethrow;
+    } catch (e, st) {
+      _talker.handle(e, st, '[ChatNotifier] Manual model load failed');
+      state = state.copyWith(
+        isLoading: false,
+        modelError: '모델 로드 실패: $e',
+      );
     }
   }
 
@@ -142,23 +166,26 @@ class ChatNotifier extends _$ChatNotifier {
       timestamp: DateTime.now(),
     );
 
-    // 유저 메시지UI 반영 및 저장
-    state = state.copyWith(
-      messages: [...state.messages, userMessage],
-      isLoading: true,
-    );
-    await ref.read(chatRepositoryProvider).saveMessage(sessionId, userMessage);
-
-    // [New Chat] 제목일 경우 첫 메시지로 제목 업데이트
-    final currentSession = state.sessions.firstWhere((s) => s.sessionId == sessionId);
-    if (currentSession.title == 'New Chat') {
-      final newTitle = text.length > 20 ? '${text.substring(0, 20)}...' : text;
-      final updatedSession = currentSession.copyWith(title: newTitle);
-      await ref.read(chatRepositoryProvider).createSession(updatedSession);
-      await fetchSessions();
-    }
-
     try {
+      // 유저 메시지 UI 반영 및 저장
+      state = state.copyWith(
+        messages: [...state.messages, userMessage],
+        error: null,
+      );
+      await ref.read(chatRepositoryProvider).saveMessage(sessionId, userMessage);
+
+      // [New Chat] 제목일 경우 첫 메시지로 제목 업데이트
+      // 세션 제목 업데이트를 위해 현재 세션 정보 조회
+      final sessionIndex = state.sessions.indexWhere((s) => s.sessionId == sessionId);
+      final currentSession = sessionIndex != -1 ? state.sessions[sessionIndex] : null;
+
+      if (currentSession != null && currentSession.title == 'New Chat') {
+        final newTitle = text.length > 20 ? '${text.substring(0, 20)}...' : text;
+        final updatedSession = currentSession.copyWith(title: newTitle);
+        await ref.read(chatRepositoryProvider).createSession(updatedSession);
+        await fetchSessions();
+      }
+
       final repository = ref.read(chatRepositoryProvider);
       final settings = ref.read(settingsProvider).value;
       
@@ -198,8 +225,8 @@ class ChatNotifier extends _$ChatNotifier {
         final finalAiMessage = state.messages.last;
         await ref.read(chatRepositoryProvider).saveMessage(sessionId, finalAiMessage);
       }
-      
-    } catch (e) {
+    } catch (e, st) {
+      _talker.handle(e, st, '[ChatNotifier] Error sending message');
       state = state.copyWith(
         messages: [...state.messages, MessageEntity(
           id: const Uuid().v4(),
@@ -209,36 +236,47 @@ class ChatNotifier extends _$ChatNotifier {
         )],
       );
     } finally {
-      state = state.copyWith(isLoading: false);
       await fetchSessions(); // 마지막 메시지 시간 업데이트 반영
     }
   }
 
-  void deleteSession(String sessionId) async {
-    await ref.read(chatRepositoryProvider).deleteSession(sessionId);
-    await fetchSessions();
-    if (state.sessionId == sessionId) {
-      state = state.copyWith(sessionId: null, messages: []);
+  Future<void> deleteSession(String sessionId) async {
+    try {
+      await ref.read(chatRepositoryProvider).deleteSession(sessionId);
+      await fetchSessions();
+      if (state.sessionId == sessionId) {
+        state = state.copyWith(sessionId: null, messages: [], error: null);
+      }
+      _talker.info('[ChatNotifier] Session deleted: $sessionId');
+    } catch (e, st) {
+       _talker.handle(e, st, '[ChatNotifier] Failed to delete session');
+       state = state.copyWith(error: '세션을 삭제할 수 없습니다: $e');
     }
   }
 
-  void clearChat() async {
+  Future<void> clearChat() async {
     if (state.sessionId != null) {
-      await ref.read(chatRepositoryProvider).deleteSession(state.sessionId!);
+      await deleteSession(state.sessionId!);
     }
     await startNewSession();
   }
 
   Future<void> clearAll() async {
-    state = state.copyWith(isLoading: true);
-    for (final session in state.sessions) {
-      await ref.read(chatRepositoryProvider).deleteSession(session.sessionId);
+    state = state.copyWith(isLoading: true, error: null);
+    try {
+      for (final session in state.sessions) {
+        await ref.read(chatRepositoryProvider).deleteSession(session.sessionId);
+      }
+      await fetchSessions();
+      state = state.copyWith(
+        sessionId: null,
+        messages: [],
+        isLoading: false,
+      );
+      _talker.info('[ChatNotifier] All sessions cleared');
+    } catch (e, st) {
+      _talker.handle(e, st, '[ChatNotifier] Failed to clear all sessions');
+      state = state.copyWith(isLoading: false, error: '모든 세션을 삭제하는 중 오류가 발생했습니다: $e');
     }
-    await fetchSessions();
-    state = state.copyWith(
-      sessionId: null,
-      messages: [],
-      isLoading: false,
-    );
   }
 }

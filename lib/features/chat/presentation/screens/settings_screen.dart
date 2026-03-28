@@ -62,11 +62,36 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget _buildAppBar(BuildContext context, ColorScheme colorScheme, TextTheme textTheme) {
     return SliverAppBar(
       pinned: true,
-      backgroundColor: colorScheme.surface,
+      backgroundColor: colorScheme.surface.withValues(alpha: 0.8),
       elevation: 0,
       centerTitle: false,
-      title: SignatureGradient(
-        child: Text('Llama AI', style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800, fontSize: 20)),
+      title: Row(
+        children: [
+          SignatureGradient(
+            child: Text(
+              'Llama AI',
+              style: textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            decoration: BoxDecoration(
+              color: colorScheme.primary.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: colorScheme.primary.withValues(alpha: 0.2)),
+            ),
+            child: Text(
+              'Settings',
+              style: textTheme.labelMedium?.copyWith(
+                color: colorScheme.primary,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
       ),
       actions: [
         IconButton(icon: const Icon(LucideIcons.user), onPressed: () {}),
@@ -81,7 +106,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'System Preferences',
+          '시스템 설정',
           style: textTheme.displayLarge?.copyWith(
             fontSize: context.responsive(36.0, tablet: 48.0, desktop: 56.0),
             fontWeight: FontWeight.w900,
@@ -89,7 +114,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ),
         const SizedBox(height: 12),
         Text(
-          'Calibrate your digital curator\'s interface and intelligence parameters.',
+          '디지털 큐레이터의 인터페이스와 지능 파라미터를 정밀하게 조정합니다.',
           style: textTheme.bodyLarge?.copyWith(color: AppColors.onSurfaceVariant, fontSize: 18),
         ),
       ],
@@ -100,14 +125,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildSectionTitle(LucideIcons.eye, 'Interface Aesthetic', AppColors.secondary),
+        _buildSectionTitle(LucideIcons.eye, '인터페이스 미학', AppColors.secondary),
         const SizedBox(height: 24),
         Row(
           children: [
             Expanded(
               child: _buildPreferenceCard(
                 colorScheme: colorScheme,
-                label: 'THEME MODE',
+                label: '테마 모드',
                 child: Container(
                   padding: const EdgeInsets.all(4),
                   decoration: BoxDecoration(
@@ -116,8 +141,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                   child: Row(
                     children: [
-                      _buildThemeTab(LucideIcons.moon, 'Midnight', true),
-                      _buildThemeTab(LucideIcons.sun, 'Ethereal', false),
+                      _buildThemeTab(LucideIcons.moon, '미드나잇', true),
+                      _buildThemeTab(LucideIcons.sun, '에테르', false),
                     ],
                   ),
                 ),
@@ -128,7 +153,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               Expanded(
                 child: _buildPreferenceCard(
                   colorScheme: colorScheme,
-                  label: 'CORE RESONANCE',
+                  label: '코어 레조넌스 (색상)',
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -141,7 +166,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ],
                       ),
                       Text(
-                        'Indigo Drift', 
+                        '인디고 드리프트', 
                         style: TextStyle(
                           fontSize: 11, 
                           fontWeight: FontWeight.bold, 
@@ -163,7 +188,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildSectionTitle(LucideIcons.brain, 'Neural Parameters', AppColors.tertiary),
+        _buildSectionTitle(LucideIcons.brain, '신경망 매개변수', AppColors.tertiary),
         const SizedBox(height: 24),
         GlassDecorator(
           borderRadius: BorderRadius.circular(32),
@@ -172,16 +197,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
             child: Column(
               children: [
                 _buildSliderRow(
-                  title: 'Creativity Temperature',
-                  desc: 'Higher values result in more divergent and creative responses.',
+                  title: '창의성 온도 (Temperature)',
+                  desc: '높은 값일수록 더욱 다양하고 창의적인 답변을 생성합니다.',
                   value: _temperature,
                   color: AppColors.primary,
                   onChanged: (v) => setState(() => _temperature = v),
                 ),
                 const SizedBox(height: 48),
                 _buildSliderRow(
-                  title: 'Nucleus Sampling (Top-P)',
-                  desc: 'Limits word choice to the most probable cumulative percentage.',
+                  title: '핵 샘플링 (Top-P)',
+                  desc: '누적 확률을 기반으로 사용될 단어의 범위를 제한합니다.',
                   value: _topP,
                   color: AppColors.tertiary,
                   onChanged: (v) => setState(() => _topP = v),
@@ -200,19 +225,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildSectionTitle(LucideIcons.shieldCheck, 'Privacy & Safety', AppColors.error),
+        _buildSectionTitle(LucideIcons.shieldCheck, '개인정보 및 보안', AppColors.error),
         const SizedBox(height: 24),
         _buildSelectionItem(
-          title: 'Training Data Opt-out',
-          desc: 'Prevent your conversations from being used to improve our models.',
+          title: '학습 데이터 활용 거부',
+          desc: '귀하의 대화 내용이 모델 개선 학습에 사용되는 것을 방지합니다.',
           value: _isTrainingOptOut,
           onChanged: (v) => setState(() => _isTrainingOptOut = v),
           colorScheme: colorScheme,
         ),
         const SizedBox(height: 12),
         _buildSelectionItem(
-          title: 'Enhanced Encryption',
-          desc: 'End-to-end encryption for all persistent chat history.',
+          title: '강화된 암호화',
+          desc: '모든 대화 히스토리에 대해 종단간 암호화를 적용합니다.',
           value: _isEncryptionEnabled,
           onChanged: (v) => setState(() => _isEncryptionEnabled = v),
           colorScheme: colorScheme,
@@ -336,8 +361,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('LOGICAL / PRECISE', style: TextStyle(fontSize: 9, fontWeight: FontWeight.w900, letterSpacing: 1.0, color: AppColors.onSurfaceVariant.withValues(alpha: 0.5))),
-            Text('CREATIVE / ABSTRACT', style: TextStyle(fontSize: 9, fontWeight: FontWeight.w900, letterSpacing: 1.0, color: AppColors.onSurfaceVariant.withValues(alpha: 0.5))),
+            Text('논리적 / 정밀함', style: TextStyle(fontSize: 9, fontWeight: FontWeight.w900, letterSpacing: 1.0, color: AppColors.onSurfaceVariant.withValues(alpha: 0.5))),
+            Text('창의적 / 추상적', style: TextStyle(fontSize: 9, fontWeight: FontWeight.w900, letterSpacing: 1.0, color: AppColors.onSurfaceVariant.withValues(alpha: 0.5))),
           ],
         ),
       ],
@@ -347,11 +372,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget _buildModelSelector(ColorScheme colorScheme) {
     return Row(
       children: [
-        _buildModelCard('Llama 3 Ultra', 'Complex reasoning', true),
+        _buildModelCard('Llama 3 Ultra', '복잡한 추론 및 분석', true),
         const SizedBox(width: 12),
-        _buildModelCard('Llama 3 Pro', 'Daily tasks', false),
+        _buildModelCard('Llama 3 Pro', '일상적인 대화 및 작업', false),
         const SizedBox(width: 12),
-        _buildModelCard('Llama 3 Flash', 'Sub-second latency', false),
+        _buildModelCard('Llama 3 Flash', '빠른 응답 속도 최적화', false),
       ],
     );
   }

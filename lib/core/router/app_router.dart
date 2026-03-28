@@ -6,6 +6,7 @@ import 'route_names.dart';
 
 import '../../features/chat/presentation/screens/settings_screen.dart';
 import '../../features/chat/presentation/screens/history_screen.dart';
+import '../../features/chat/presentation/screens/meeting_dashboard_screen.dart';
 
 part 'app_router.g.dart';
 
@@ -26,6 +27,10 @@ GoRouter appRouter(Ref ref) {
       GoRoute(
         path: RouteNames.history,
         builder: (context, state) => const HistoryScreen(),
+      ),
+      GoRoute(
+        path: RouteNames.meetingReport,
+        builder: (context, state) => const MeetingDashboardScreen(),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(

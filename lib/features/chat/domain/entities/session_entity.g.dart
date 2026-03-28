@@ -17,6 +17,12 @@ _SessionEntity _$SessionEntityFromJson(Map<String, dynamic> json) =>
               ?.map((e) => MessageEntity.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
+      isMeeting: json['isMeeting'] as bool? ?? false,
+      meetingMetadata: json['meetingMetadata'] == null
+          ? null
+          : MeetingMetadata.fromJson(
+              json['meetingMetadata'] as Map<String, dynamic>,
+            ),
     );
 
 Map<String, dynamic> _$SessionEntityToJson(_SessionEntity instance) =>
@@ -25,5 +31,6 @@ Map<String, dynamic> _$SessionEntityToJson(_SessionEntity instance) =>
       'title': instance.title,
       'createdAt': instance.createdAt.toIso8601String(),
       'lastMessageAt': instance.lastMessageAt.toIso8601String(),
-      'messages': instance.messages,
+      'isMeeting': instance.isMeeting,
+      'meetingMetadata': instance.meetingMetadata,
     };

@@ -12,6 +12,7 @@ abstract class ChatState with _$ChatState {
     @Default(false) bool isLoading,
     @Default(false) bool isModelLoaded,
     String? modelError,
+    String? error,
     String? modelPath,
     String? sessionId,
   }) = _ChatState;

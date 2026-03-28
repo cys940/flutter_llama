@@ -14,6 +14,8 @@ class AppDesignSystem extends ThemeExtension<AppDesignSystem> {
     required this.surfaceRadiusLg,
     required this.surfaceRadiusMd,
     required this.surfaceRadiusSm,
+    required this.aiSpringCurve,
+    required this.glassOpacityContainer,
   });
 
   final List<Color> primaryGradient;
@@ -26,6 +28,8 @@ class AppDesignSystem extends ThemeExtension<AppDesignSystem> {
   final double surfaceRadiusLg;
   final double surfaceRadiusMd;
   final double surfaceRadiusSm;
+  final Curve aiSpringCurve;
+  final double glassOpacityContainer;
 
   @override
   AppDesignSystem copyWith({
@@ -39,6 +43,8 @@ class AppDesignSystem extends ThemeExtension<AppDesignSystem> {
     double? surfaceRadiusLg,
     double? surfaceRadiusMd,
     double? surfaceRadiusSm,
+    Curve? aiSpringCurve,
+    double? glassOpacityContainer,
   }) {
     return AppDesignSystem(
       primaryGradient: primaryGradient ?? this.primaryGradient,
@@ -51,6 +57,8 @@ class AppDesignSystem extends ThemeExtension<AppDesignSystem> {
       surfaceRadiusLg: surfaceRadiusLg ?? this.surfaceRadiusLg,
       surfaceRadiusMd: surfaceRadiusMd ?? this.surfaceRadiusMd,
       surfaceRadiusSm: surfaceRadiusSm ?? this.surfaceRadiusSm,
+      aiSpringCurve: aiSpringCurve ?? this.aiSpringCurve,
+      glassOpacityContainer: glassOpacityContainer ?? this.glassOpacityContainer,
     );
   }
 
@@ -71,6 +79,8 @@ class AppDesignSystem extends ThemeExtension<AppDesignSystem> {
       surfaceRadiusLg: (surfaceRadiusLg + (other.surfaceRadiusLg - surfaceRadiusLg) * t),
       surfaceRadiusMd: (surfaceRadiusMd + (other.surfaceRadiusMd - surfaceRadiusMd) * t),
       surfaceRadiusSm: (surfaceRadiusSm + (other.surfaceRadiusSm - surfaceRadiusSm) * t),
+      aiSpringCurve: t < 0.5 ? aiSpringCurve : other.aiSpringCurve,
+      glassOpacityContainer: (glassOpacityContainer + (other.glassOpacityContainer - glassOpacityContainer) * t),
     );
   }
 }

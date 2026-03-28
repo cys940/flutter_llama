@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'message_entity.dart';
+import 'meeting_metadata.dart';
 
 part 'session_entity.freezed.dart';
 part 'session_entity.g.dart';
@@ -11,7 +12,9 @@ abstract class SessionEntity with _$SessionEntity {
     required String title,
     required DateTime createdAt,
     required DateTime lastMessageAt,
-    @Default([]) List<MessageEntity> messages,
+    @JsonKey(includeToJson: false) @Default([]) List<MessageEntity> messages,
+    @Default(false) bool isMeeting,
+    MeetingMetadata? meetingMetadata,
   }) = _SessionEntity;
 
   factory SessionEntity.fromJson(Map<String, dynamic> json) => _$SessionEntityFromJson(json);

@@ -1,3 +1,4 @@
+import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'app_colors.dart';
@@ -6,31 +7,34 @@ import 'app_design_system.dart';
 class AppTheme {
   AppTheme._();
 
-  static ThemeData get darkTheme => ThemeData(
-        brightness: Brightness.dark,
-        scaffoldBackgroundColor: AppColors.background,
-        primaryColor: AppColors.primary,
-        
-        // Material 3 ColorScheme Alignment
-        colorScheme: const ColorScheme.dark(
+  static ThemeData get darkTheme => FlexThemeData.dark(
+        useMaterial3: true,
+        colors: const FlexSchemeColor(
           primary: AppColors.primary,
-          secondary: AppColors.secondary,
-          tertiary: AppColors.tertiary,
-          surface: AppColors.surface,
-          error: AppColors.error,
-          onPrimary: AppColors.onPrimary,
-          onSecondary: AppColors.onSecondary,
-          onSurface: AppColors.onSurface,
-          onSurfaceVariant: AppColors.onSurfaceVariant,
           primaryContainer: AppColors.primaryContainer,
-          onPrimaryContainer: AppColors.onPrimaryContainer,
+          secondary: AppColors.secondary,
           secondaryContainer: AppColors.secondaryContainer,
-          onSecondaryContainer: AppColors.onSecondaryContainer,
-          surfaceContainerLow: AppColors.surfaceLow,
-          surfaceContainerHigh: AppColors.surfaceHigh,
-          surfaceContainerHighest: AppColors.surfaceHighest,
+          tertiary: AppColors.tertiary,
+          tertiaryContainer: Color(0xFF560094),
+          appBarColor: AppColors.surfaceLow,
+          error: AppColors.error,
         ),
-
+        surface: AppColors.surface,
+        scaffoldBackground: AppColors.background,
+        subThemesData: const FlexSubThemesData(
+          useTextTheme: true,
+          useM2StyleDividerInM3: false,
+          adaptiveRemoveElevationTint: FlexAdaptive.all(),
+          adaptiveElevationShadowsBack: FlexAdaptive.all(),
+          inputDecoratorIsFilled: true,
+          inputDecoratorBorderType: FlexInputBorderType.outline,
+          inputDecoratorRadius: 999, // Full rounded
+          inputDecoratorUnfocusedHasBorder: false,
+          inputDecoratorFocusedHasBorder: false,
+        ),
+        visualDensity: VisualDensity.standard,
+        fontFamily: GoogleFonts.inter().fontFamily,
+      ).copyWith(
         // Editorial Typography System
         textTheme: TextTheme(
           displayLarge: GoogleFonts.plusJakartaSans(
@@ -40,11 +44,17 @@ class AppTheme {
             letterSpacing: -0.02 * 56, // -0.02em tracking
             height: 1.1,
           ),
+          headlineLarge: GoogleFonts.plusJakartaSans(
+            color: AppColors.onSurface,
+            fontSize: 32,
+            fontWeight: FontWeight.bold,
+            letterSpacing: -0.02 * 32,
+          ),
           headlineSmall: GoogleFonts.plusJakartaSans(
             color: AppColors.onSurface,
             fontSize: 24, // 1.5rem
             fontWeight: FontWeight.w600,
-            letterSpacing: -0.01 * 24,
+            letterSpacing: -0.02 * 24,
           ),
           bodyLarge: GoogleFonts.inter(
             color: AppColors.onSurface,
@@ -55,7 +65,7 @@ class AppTheme {
           bodyMedium: GoogleFonts.inter(
             color: AppColors.onSurfaceVariant,
             fontSize: 14,
-            height: 1.5,
+            height: 1.6,
           ),
           labelMedium: GoogleFonts.inter(
             color: AppColors.onSurfaceVariant,
@@ -85,20 +95,22 @@ class AppTheme {
               offset: const Offset(0, 8),
             ),
             surfaceRadiusLg: 48.0, // rounded-xl for containers
-            surfaceRadiusMd: 24.0, 
+            surfaceRadiusMd: 24.0,
             surfaceRadiusSm: 12.0,
+            aiSpringCurve: const Cubic(0.175, 0.885, 0.32, 1.275), // Custom Spring
+            glassOpacityContainer: 0.15,
           ),
         ],
 
-        // Input Theme: No-Line Rule
+        // Input Theme: No-Line Rule & Glass (Customized in Widgets, but defaults here)
         inputDecorationTheme: InputDecorationTheme(
           filled: true,
           fillColor: AppColors.surfaceVariant.withValues(alpha: 0.6),
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(999), // full rounded
-            borderSide: BorderSide.none, // Absolute No-Line
+            borderRadius: BorderRadius.circular(999), 
+            borderSide: BorderSide.none, 
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(999),
@@ -106,28 +118,11 @@ class AppTheme {
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(999),
-            borderSide: BorderSide.none, // We use Glow instead of border
+            borderSide: BorderSide.none,
           ),
           hintStyle: GoogleFonts.inter(
             color: AppColors.onSurfaceVariant.withValues(alpha: 0.5),
             fontSize: 14,
-          ),
-        ),
-
-        // Action Components
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primary,
-            foregroundColor: AppColors.onPrimary,
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            elevation: 0,
-            textStyle: GoogleFonts.inter(
-              fontWeight: FontWeight.bold,
-              fontSize: 14,
-            ),
           ),
         ),
 
@@ -136,18 +131,6 @@ class AppTheme {
           color: Colors.transparent,
           thickness: 0,
           space: 0,
-        ),
-        
-        // Sidebar / Scaffolding
-        drawerTheme: const DrawerThemeData(
-          backgroundColor: AppColors.surfaceLow,
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.only(
-              topRight: Radius.circular(48),
-              bottomRight: Radius.circular(48),
-            ),
-          ),
         ),
       );
 }

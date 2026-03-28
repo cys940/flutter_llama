@@ -12,8 +12,8 @@ class AppColors {
   static const Color surfaceVariant = Color(0xFF192540); // For Glassmorphism
 
   // Primary & Secondary (SPARK & FLOW)
-  static const Color primary = Color(0xFF9FA7FF); // Vibrant Indigo (Spark)
-  static const Color secondary = Color(0xFF3ADFFA); // Cyan (Flow)
+  static const Color primary = Color(0xFF9FA7FF); // Spark Blue (User Bubbles)
+  static const Color secondary = Color(0xFF3ADFFA); // Flow Cyan (Accent/Glow)
   static const Color tertiary = Color(0xFFC180FF); // Violet (Thinking)
   
   // Containers (Editorial Surfaces)
