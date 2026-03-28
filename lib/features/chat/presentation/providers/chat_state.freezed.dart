@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$ChatState {
 
- List<ChatMessage> get messages; bool get isLoading; bool get isModelLoaded;
+ List<MessageEntity> get messages; bool get isLoading; bool get isModelLoaded; String? get sessionId;
 /// Create a copy of ChatState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $ChatStateCopyWith<ChatState> get copyWith => _$ChatStateCopyWithImpl<ChatState>
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChatState&&const DeepCollectionEquality().equals(other.messages, messages)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.isModelLoaded, isModelLoaded) || other.isModelLoaded == isModelLoaded));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChatState&&const DeepCollectionEquality().equals(other.messages, messages)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.isModelLoaded, isModelLoaded) || other.isModelLoaded == isModelLoaded)&&(identical(other.sessionId, sessionId) || other.sessionId == sessionId));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(messages),isLoading,isModelLoaded);
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(messages),isLoading,isModelLoaded,sessionId);
 
 @override
 String toString() {
-  return 'ChatState(messages: $messages, isLoading: $isLoading, isModelLoaded: $isModelLoaded)';
+  return 'ChatState(messages: $messages, isLoading: $isLoading, isModelLoaded: $isModelLoaded, sessionId: $sessionId)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $ChatStateCopyWith<$Res>  {
   factory $ChatStateCopyWith(ChatState value, $Res Function(ChatState) _then) = _$ChatStateCopyWithImpl;
 @useResult
 $Res call({
- List<ChatMessage> messages, bool isLoading, bool isModelLoaded
+ List<MessageEntity> messages, bool isLoading, bool isModelLoaded, String? sessionId
 });
 
 
@@ -62,12 +62,13 @@ class _$ChatStateCopyWithImpl<$Res>
 
 /// Create a copy of ChatState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? messages = null,Object? isLoading = null,Object? isModelLoaded = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? messages = null,Object? isLoading = null,Object? isModelLoaded = null,Object? sessionId = freezed,}) {
   return _then(_self.copyWith(
 messages: null == messages ? _self.messages : messages // ignore: cast_nullable_to_non_nullable
-as List<ChatMessage>,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
+as List<MessageEntity>,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
 as bool,isModelLoaded: null == isModelLoaded ? _self.isModelLoaded : isModelLoaded // ignore: cast_nullable_to_non_nullable
-as bool,
+as bool,sessionId: freezed == sessionId ? _self.sessionId : sessionId // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 
@@ -152,10 +153,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<ChatMessage> messages,  bool isLoading,  bool isModelLoaded)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<MessageEntity> messages,  bool isLoading,  bool isModelLoaded,  String? sessionId)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ChatState() when $default != null:
-return $default(_that.messages,_that.isLoading,_that.isModelLoaded);case _:
+return $default(_that.messages,_that.isLoading,_that.isModelLoaded,_that.sessionId);case _:
   return orElse();
 
 }
@@ -173,10 +174,10 @@ return $default(_that.messages,_that.isLoading,_that.isModelLoaded);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<ChatMessage> messages,  bool isLoading,  bool isModelLoaded)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<MessageEntity> messages,  bool isLoading,  bool isModelLoaded,  String? sessionId)  $default,) {final _that = this;
 switch (_that) {
 case _ChatState():
-return $default(_that.messages,_that.isLoading,_that.isModelLoaded);case _:
+return $default(_that.messages,_that.isLoading,_that.isModelLoaded,_that.sessionId);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -193,10 +194,10 @@ return $default(_that.messages,_that.isLoading,_that.isModelLoaded);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<ChatMessage> messages,  bool isLoading,  bool isModelLoaded)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<MessageEntity> messages,  bool isLoading,  bool isModelLoaded,  String? sessionId)?  $default,) {final _that = this;
 switch (_that) {
 case _ChatState() when $default != null:
-return $default(_that.messages,_that.isLoading,_that.isModelLoaded);case _:
+return $default(_that.messages,_that.isLoading,_that.isModelLoaded,_that.sessionId);case _:
   return null;
 
 }
@@ -208,11 +209,11 @@ return $default(_that.messages,_that.isLoading,_that.isModelLoaded);case _:
 
 
 class _ChatState implements ChatState {
-  const _ChatState({final  List<ChatMessage> messages = const [], this.isLoading = false, this.isModelLoaded = false}): _messages = messages;
+  const _ChatState({final  List<MessageEntity> messages = const [], this.isLoading = false, this.isModelLoaded = false, this.sessionId}): _messages = messages;
   
 
- final  List<ChatMessage> _messages;
-@override@JsonKey() List<ChatMessage> get messages {
+ final  List<MessageEntity> _messages;
+@override@JsonKey() List<MessageEntity> get messages {
   if (_messages is EqualUnmodifiableListView) return _messages;
   // ignore: implicit_dynamic_type
   return EqualUnmodifiableListView(_messages);
@@ -220,6 +221,7 @@ class _ChatState implements ChatState {
 
 @override@JsonKey() final  bool isLoading;
 @override@JsonKey() final  bool isModelLoaded;
+@override final  String? sessionId;
 
 /// Create a copy of ChatState
 /// with the given fields replaced by the non-null parameter values.
@@ -231,16 +233,16 @@ _$ChatStateCopyWith<_ChatState> get copyWith => __$ChatStateCopyWithImpl<_ChatSt
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ChatState&&const DeepCollectionEquality().equals(other._messages, _messages)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.isModelLoaded, isModelLoaded) || other.isModelLoaded == isModelLoaded));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ChatState&&const DeepCollectionEquality().equals(other._messages, _messages)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.isModelLoaded, isModelLoaded) || other.isModelLoaded == isModelLoaded)&&(identical(other.sessionId, sessionId) || other.sessionId == sessionId));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_messages),isLoading,isModelLoaded);
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_messages),isLoading,isModelLoaded,sessionId);
 
 @override
 String toString() {
-  return 'ChatState(messages: $messages, isLoading: $isLoading, isModelLoaded: $isModelLoaded)';
+  return 'ChatState(messages: $messages, isLoading: $isLoading, isModelLoaded: $isModelLoaded, sessionId: $sessionId)';
 }
 
 
@@ -251,7 +253,7 @@ abstract mixin class _$ChatStateCopyWith<$Res> implements $ChatStateCopyWith<$Re
   factory _$ChatStateCopyWith(_ChatState value, $Res Function(_ChatState) _then) = __$ChatStateCopyWithImpl;
 @override @useResult
 $Res call({
- List<ChatMessage> messages, bool isLoading, bool isModelLoaded
+ List<MessageEntity> messages, bool isLoading, bool isModelLoaded, String? sessionId
 });
 
 
@@ -268,12 +270,13 @@ class __$ChatStateCopyWithImpl<$Res>
 
 /// Create a copy of ChatState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? messages = null,Object? isLoading = null,Object? isModelLoaded = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? messages = null,Object? isLoading = null,Object? isModelLoaded = null,Object? sessionId = freezed,}) {
   return _then(_ChatState(
 messages: null == messages ? _self._messages : messages // ignore: cast_nullable_to_non_nullable
-as List<ChatMessage>,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
+as List<MessageEntity>,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
 as bool,isModelLoaded: null == isModelLoaded ? _self.isModelLoaded : isModelLoaded // ignore: cast_nullable_to_non_nullable
-as bool,
+as bool,sessionId: freezed == sessionId ? _self.sessionId : sessionId // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 

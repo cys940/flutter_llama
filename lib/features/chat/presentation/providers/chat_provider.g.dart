@@ -49,7 +49,7 @@ final class LlamaDataSourceProvider
   }
 }
 
-String _$llamaDataSourceHash() => r'efc704131df894d57a413b1b6df706e65e280636';
+String _$llamaDataSourceHash() => r'e0f9736226e0bb9e1dae560d33c2bb2647ad2cff';
 
 @ProviderFor(chatRepository)
 final chatRepositoryProvider = ChatRepositoryProvider._();
@@ -90,7 +90,7 @@ final class ChatRepositoryProvider
   }
 }
 
-String _$chatRepositoryHash() => r'a5271042013201781d8df2e5e0fea54f6538813a';
+String _$chatRepositoryHash() => r'39976163d5bbaddc90d1e590415b60dfdaa4e02a';
 
 @ProviderFor(ChatNotifier)
 final chatProvider = ChatNotifierProvider._();
@@ -124,7 +124,7 @@ final class ChatNotifierProvider
   }
 }
 
-String _$chatNotifierHash() => r'dd5859a6cf7aecc97e09cb53b225fc2262e9b2c1';
+String _$chatNotifierHash() => r'f4d53d57626f3fcc65f961aa408bda418fdc71c2';
 
 abstract class _$ChatNotifier extends $Notifier<ChatState> {
   ChatState build();

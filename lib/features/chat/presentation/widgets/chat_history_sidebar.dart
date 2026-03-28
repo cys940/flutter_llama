@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_sizes.dart';
 import '../../../../core/utils/responsive_helper.dart';
+import '../providers/chat_provider.dart';
+import '../providers/sessions_provider.dart';
 
 /// 채팅 히스토리 목록을 표시하는 반응형 사이드바 위젯입니다.
-/// 모바일에서는 Drawer로, 태블릿/데스크탑에서는 고정 사이드바로 사용됩니다.
-class ChatHistorySidebar extends StatelessWidget {
+class ChatHistorySidebar extends ConsumerWidget {
   const ChatHistorySidebar({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final bool isMobile = context.isMobile;
+    final sessionsAsync = ref.watch(sessionsProvider);
+    final currentSessionId = ref.watch(chatProvider).sessionId;
     
     return Container(
       width: isMobile ? null : AppSizes.responsiveSidebarWidth(context),
@@ -48,7 +52,7 @@ class ChatHistorySidebar extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(AppSizes.m),
               child: OutlinedButton.icon(
-                onPressed: () {},
+                onPressed: () => ref.read(sessionsProvider.notifier).createNewSession(),
                 icon: const Icon(Icons.add),
                 label: const Text('New Chat'),
                 style: OutlinedButton.styleFrom(
@@ -61,28 +65,54 @@ class ChatHistorySidebar extends StatelessWidget {
               ),
             ),
             
-            // 채팅 목록 (Placeholder)
+            // 채팅 목록
             Expanded(
-              child: ListView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: AppSizes.s),
-                itemCount: 5,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    leading: const Icon(Icons.chat_bubble_outline, size: 20),
-                    title: Text(
-                      'Chat Session ${index + 1}',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    subtitle: const Text('Last message snippet...', maxLines: 1),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(AppSizes.radiusS),
-                    ),
-                    onTap: () {
-                      if (isMobile) Navigator.pop(context); // Close drawer on mobile
-                    },
-                  );
-                },
+              child: sessionsAsync.when(
+                data: (sessions) => ListView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: AppSizes.s),
+                  itemCount: sessions.length,
+                  itemBuilder: (context, index) {
+                    final session = sessions[index];
+                    final isSelected = session.sessionId == currentSessionId;
+
+                    return ListTile(
+                      selected: isSelected,
+                      selectedTileColor: AppColors.surface,
+                      leading: Icon(
+                        Icons.chat_bubble_outline, 
+                        size: 20,
+                        color: isSelected ? AppColors.primary : null,
+                      ),
+                      title: Text(
+                        session.title,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontWeight: isSelected ? FontWeight.bold : null,
+                        ),
+                      ),
+                      subtitle: Text(
+                        '${session.lastMessageAt.month}/${session.lastMessageAt.day}', 
+                        style: const TextStyle(fontSize: 12),
+                      ),
+                      trailing: isSelected 
+                          ? IconButton(
+                              icon: const Icon(Icons.delete_outline, size: 20),
+                              onPressed: () => ref.read(sessionsProvider.notifier).deleteSession(session.sessionId),
+                            )
+                          : null,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(AppSizes.radiusS),
+                      ),
+                      onTap: () {
+                        ref.read(chatProvider.notifier).loadSession(session.sessionId);
+                        if (isMobile) Navigator.pop(context);
+                      },
+                    );
+                  },
+                ),
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (err, stack) => Center(child: Text('Error: $err')),
               ),
             ),
             
