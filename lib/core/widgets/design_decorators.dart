@@ -1,0 +1,109 @@
+import 'dart:ui';
+import 'package:flutter/material.dart';
+import '../theme/app_colors.dart';
+
+/// Stitch 'Ethereal Intelligence' 명세에 따른 유리 질감 효과를 적용하는 데코레이터입니다.
+class GlassDecorator extends StatelessWidget {
+  const GlassDecorator({
+    super.key,
+    required this.child,
+    this.blur = 24.0,
+    this.opacity = 0.6,
+    this.color = AppColors.surfaceVariant,
+    this.borderRadius,
+    this.useGhostBorder = true,
+  });
+
+  final Widget child;
+  final double blur;
+  final double opacity;
+  final Color color;
+  final BorderRadius? borderRadius;
+  final bool useGhostBorder;
+
+  @override
+  Widget build(BuildContext context) {
+    final effectiveRadius = borderRadius ?? BorderRadius.circular(24);
+    
+    return ClipRRect(
+      borderRadius: effectiveRadius,
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
+        child: Container(
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: opacity),
+            borderRadius: effectiveRadius,
+            border: useGhostBorder 
+                ? Border.all(color: AppColors.outlineVariant) // 15% opacity ghost border
+                : null,
+          ),
+          child: child,
+        ),
+      ),
+    );
+  }
+}
+
+/// 인터랙티브 요소에 Stitch Signature Glow 효과를 부여하는 데코레이터입니다.
+class GlowDecorator extends StatelessWidget {
+  const GlowDecorator({
+    super.key,
+    required this.child,
+    this.isFocused = false,
+    this.glowColor = AppColors.primary,
+    this.spread = 4.0,
+    this.blur = 12.0,
+    this.borderRadius,
+  });
+
+  final Widget child;
+  final bool isFocused;
+  final Color glowColor;
+  final double spread;
+  final double blur;
+  final BorderRadius? borderRadius;
+
+  @override
+  Widget build(BuildContext context) {
+    if (!isFocused) return child;
+
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 200),
+      decoration: BoxDecoration(
+        borderRadius: borderRadius ?? BorderRadius.circular(999),
+        boxShadow: [
+          BoxShadow(
+            color: glowColor.withValues(alpha: 0.2),
+            spreadRadius: spread,
+            blurRadius: blur,
+          ),
+        ],
+      ),
+      child: child,
+    );
+  }
+}
+
+/// 버튼이나 아이콘에 Signature 135-degree Gradient를 입히는 데코레이터입니다.
+class SignatureGradient extends StatelessWidget {
+  const SignatureGradient({
+    super.key,
+    required this.child,
+    this.gradient = AppColors.primaryGradient,
+  });
+
+  final Widget child;
+  final List<Color> gradient;
+
+  @override
+  Widget build(BuildContext context) {
+    return ShaderMask(
+      shaderCallback: (bounds) => LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight, // 135-degree approximate
+        colors: gradient,
+      ).createShader(bounds),
+      child: child,
+    );
+  }
+}

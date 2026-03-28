@@ -11,16 +11,19 @@ part of 'session_entity.dart';
 
 // dart format off
 T _$identity<T>(T value) => value;
+
 /// @nodoc
 mixin _$SessionEntity {
 
- String get sessionId; String get title; DateTime get createdAt; DateTime get lastMessageAt; List<MessageEntity> get messages;
+@JsonKey(name: 'id') String get sessionId; String get title; DateTime get createdAt; DateTime get lastMessageAt; List<MessageEntity> get messages;
 /// Create a copy of SessionEntity
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
 $SessionEntityCopyWith<SessionEntity> get copyWith => _$SessionEntityCopyWithImpl<SessionEntity>(this as SessionEntity, _$identity);
 
+  /// Serializes this SessionEntity to a JSON map.
+  Map<String, dynamic> toJson();
 
 
 @override
@@ -28,7 +31,7 @@ bool operator ==(Object other) {
   return identical(this, other) || (other.runtimeType == runtimeType&&other is SessionEntity&&(identical(other.sessionId, sessionId) || other.sessionId == sessionId)&&(identical(other.title, title) || other.title == title)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.lastMessageAt, lastMessageAt) || other.lastMessageAt == lastMessageAt)&&const DeepCollectionEquality().equals(other.messages, messages));
 }
 
-
+@JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode => Object.hash(runtimeType,sessionId,title,createdAt,lastMessageAt,const DeepCollectionEquality().hash(messages));
 
@@ -45,7 +48,7 @@ abstract mixin class $SessionEntityCopyWith<$Res>  {
   factory $SessionEntityCopyWith(SessionEntity value, $Res Function(SessionEntity) _then) = _$SessionEntityCopyWithImpl;
 @useResult
 $Res call({
- String sessionId, String title, DateTime createdAt, DateTime lastMessageAt, List<MessageEntity> messages
+@JsonKey(name: 'id') String sessionId, String title, DateTime createdAt, DateTime lastMessageAt, List<MessageEntity> messages
 });
 
 
@@ -154,7 +157,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String sessionId,  String title,  DateTime createdAt,  DateTime lastMessageAt,  List<MessageEntity> messages)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'id')  String sessionId,  String title,  DateTime createdAt,  DateTime lastMessageAt,  List<MessageEntity> messages)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SessionEntity() when $default != null:
 return $default(_that.sessionId,_that.title,_that.createdAt,_that.lastMessageAt,_that.messages);case _:
@@ -175,7 +178,7 @@ return $default(_that.sessionId,_that.title,_that.createdAt,_that.lastMessageAt,
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String sessionId,  String title,  DateTime createdAt,  DateTime lastMessageAt,  List<MessageEntity> messages)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'id')  String sessionId,  String title,  DateTime createdAt,  DateTime lastMessageAt,  List<MessageEntity> messages)  $default,) {final _that = this;
 switch (_that) {
 case _SessionEntity():
 return $default(_that.sessionId,_that.title,_that.createdAt,_that.lastMessageAt,_that.messages);case _:
@@ -195,7 +198,7 @@ return $default(_that.sessionId,_that.title,_that.createdAt,_that.lastMessageAt,
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String sessionId,  String title,  DateTime createdAt,  DateTime lastMessageAt,  List<MessageEntity> messages)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'id')  String sessionId,  String title,  DateTime createdAt,  DateTime lastMessageAt,  List<MessageEntity> messages)?  $default,) {final _that = this;
 switch (_that) {
 case _SessionEntity() when $default != null:
 return $default(_that.sessionId,_that.title,_that.createdAt,_that.lastMessageAt,_that.messages);case _:
@@ -207,13 +210,13 @@ return $default(_that.sessionId,_that.title,_that.createdAt,_that.lastMessageAt,
 }
 
 /// @nodoc
-
+@JsonSerializable()
 
 class _SessionEntity implements SessionEntity {
-  const _SessionEntity({required this.sessionId, required this.title, required this.createdAt, required this.lastMessageAt, final  List<MessageEntity> messages = const []}): _messages = messages;
-  
+  const _SessionEntity({@JsonKey(name: 'id') required this.sessionId, required this.title, required this.createdAt, required this.lastMessageAt, final  List<MessageEntity> messages = const []}): _messages = messages;
+  factory _SessionEntity.fromJson(Map<String, dynamic> json) => _$SessionEntityFromJson(json);
 
-@override final  String sessionId;
+@override@JsonKey(name: 'id') final  String sessionId;
 @override final  String title;
 @override final  DateTime createdAt;
 @override final  DateTime lastMessageAt;
@@ -231,14 +234,17 @@ class _SessionEntity implements SessionEntity {
 @pragma('vm:prefer-inline')
 _$SessionEntityCopyWith<_SessionEntity> get copyWith => __$SessionEntityCopyWithImpl<_SessionEntity>(this, _$identity);
 
-
+@override
+Map<String, dynamic> toJson() {
+  return _$SessionEntityToJson(this, );
+}
 
 @override
 bool operator ==(Object other) {
   return identical(this, other) || (other.runtimeType == runtimeType&&other is _SessionEntity&&(identical(other.sessionId, sessionId) || other.sessionId == sessionId)&&(identical(other.title, title) || other.title == title)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.lastMessageAt, lastMessageAt) || other.lastMessageAt == lastMessageAt)&&const DeepCollectionEquality().equals(other._messages, _messages));
 }
 
-
+@JsonKey(includeFromJson: false, includeToJson: false)
 @override
 int get hashCode => Object.hash(runtimeType,sessionId,title,createdAt,lastMessageAt,const DeepCollectionEquality().hash(_messages));
 
@@ -255,7 +261,7 @@ abstract mixin class _$SessionEntityCopyWith<$Res> implements $SessionEntityCopy
   factory _$SessionEntityCopyWith(_SessionEntity value, $Res Function(_SessionEntity) _then) = __$SessionEntityCopyWithImpl;
 @override @useResult
 $Res call({
- String sessionId, String title, DateTime createdAt, DateTime lastMessageAt, List<MessageEntity> messages
+@JsonKey(name: 'id') String sessionId, String title, DateTime createdAt, DateTime lastMessageAt, List<MessageEntity> messages
 });
 
 

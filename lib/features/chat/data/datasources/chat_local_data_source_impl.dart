@@ -16,7 +16,7 @@ class ChatLocalDataSourceImpl implements ChatLocalDataSource {
     final db = await dbHelper.database;
     await db.insert(
       'sessions',
-      SessionEntity.toMap(session),
+      session.toJson(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
   }
@@ -38,7 +38,7 @@ class ChatLocalDataSourceImpl implements ChatLocalDataSource {
       orderBy: 'timestamp ASC',
     );
 
-    return List.generate(maps.length, (i) => MessageEntity.fromMap(maps[i]));
+    return maps.map((json) => MessageEntity.fromJson(json)).toList();
   }
 
   @override
@@ -49,13 +49,14 @@ class ChatLocalDataSourceImpl implements ChatLocalDataSource {
       orderBy: 'lastMessageAt DESC',
     );
 
-    return List.generate(maps.length, (i) => SessionEntity.fromMap(maps[i]));
+    return maps.map((json) => SessionEntity.fromJson(json)).toList();
   }
 
   @override
   Future<void> saveMessage(String sessionId, MessageEntity message) async {
     final db = await dbHelper.database;
-    await db.insert('messages', MessageEntity.toMap(message, sessionId));
+    final messageJson = message.copyWith(sessionId: sessionId).toJson();
+    await db.insert('messages', messageJson);
 
     // 세션의 마지막 메시지 시간 업데이트
     await db.update(

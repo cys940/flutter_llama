@@ -1,0 +1,68 @@
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/annotations.dart';
+import 'package:mockito/mockito.dart';
+import 'package:local_ai_chat/features/chat/data/datasources/chat_local_data_source.dart';
+import 'package:local_ai_chat/features/chat/data/datasources/llama_data_source.dart';
+import 'package:local_ai_chat/features/chat/data/repositories/chat_repository_impl.dart';
+import 'package:local_ai_chat/features/chat/domain/entities/session_entity.dart';
+import 'package:local_ai_chat/features/chat/domain/entities/session_entity.dart';
+
+@GenerateMocks([ChatLocalDataSource, LlamaDataSource])
+import 'chat_repository_impl_test.mocks.dart';
+
+void main() {
+  late ChatRepositoryImpl repository;
+  late MockChatLocalDataSource mockLocalDataSource;
+  late MockLlamaDataSource mockLlamaDataSource;
+
+  setUp(() {
+    mockLocalDataSource = MockChatLocalDataSource();
+    mockLlamaDataSource = MockLlamaDataSource();
+    repository = ChatRepositoryImpl(
+      localDataSource: mockLocalDataSource,
+      llamaDataSource: mockLlamaDataSource,
+    );
+  });
+
+  final tMessage = MessageEntity(
+    id: '1',
+    text: 'Hello',
+    isUser: true,
+    timestamp: DateTime.now(),
+  );
+  final tSession = SessionEntity(
+    sessionId: 's1',
+    title: 'Test Session',
+    createdAt: DateTime.now(),
+    lastMessageAt: DateTime.now(),
+  );
+
+  group('getSessions', () {
+    test('should return sessions from local data source', () async {
+      // arrange
+      when(mockLocalDataSource.getSessions())
+          .thenAnswer((_) async => [tSession]);
+
+      // act
+      final result = await repository.getSessions();
+
+      // assert
+      expect(result, [tSession]);
+      verify(mockLocalDataSource.getSessions());
+    });
+  });
+
+  group('saveMessage', () {
+    test('should call local data source to save message', () async {
+      // arrange
+      when(mockLocalDataSource.saveMessage(any, any))
+          .thenAnswer((_) async => Future.value());
+
+      // act
+      await repository.saveMessage('s1', tMessage);
+
+      // assert
+      verify(mockLocalDataSource.saveMessage('s1', tMessage));
+    });
+  });
+}

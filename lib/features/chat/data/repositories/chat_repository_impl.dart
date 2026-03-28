@@ -1,4 +1,5 @@
 import 'package:injectable/injectable.dart';
+import '../../domain/entities/message_entity.dart';
 import '../../domain/entities/session_entity.dart';
 import '../../domain/repositories/chat_repository.dart';
 import '../datasources/chat_local_data_source.dart';
@@ -20,8 +21,16 @@ class ChatRepositoryImpl implements ChatRepository {
   }
 
   @override
-  Stream<String> sendMessageStream(String text) {
-    return llamaDataSource.generateResponse(text);
+  Stream<String> sendMessageStream(
+    String text, {
+    double? temperature,
+    int? maxTokens,
+  }) {
+    return llamaDataSource.generateResponse(
+      text,
+      temperature: temperature,
+      maxTokens: maxTokens,
+    );
   }
 
   @override
@@ -47,5 +56,10 @@ class ChatRepositoryImpl implements ChatRepository {
   @override
   Future<void> saveMessage(String sessionId, MessageEntity message) async {
     return localDataSource.saveMessage(sessionId, message);
+  }
+
+  @override
+  void resetSession() {
+    llamaDataSource.startNewSession();
   }
 }

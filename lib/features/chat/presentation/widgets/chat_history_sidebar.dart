@@ -1,90 +1,144 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../core/theme/app_colors.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../../core/theme/app_sizes.dart';
 import '../../../../core/router/route_names.dart';
+import '../providers/chat_provider.dart';
 
-class ChatHistorySidebar extends StatelessWidget {
+class ChatHistorySidebar extends ConsumerWidget {
   const ChatHistorySidebar({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final chatState = ref.watch(chatProvider);
+    final sessions = chatState.sessions;
 
     return Container(
       width: 280,
-      color: AppColors.surfaceLow,
+      color: colorScheme.surfaceContainerLow,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: AppSizes.xxl * 1.5),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: AppSizes.l),
-            child: Text(
-              'History & Explore',
-              style: theme.textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.w900,
-                fontSize: 22,
-                letterSpacing: -0.5,
-              ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'History',
+                  style: theme.textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.w900,
+                    fontSize: 22,
+                    letterSpacing: -0.5,
+                  ),
+                ),
+                IconButton(
+                  onPressed: () =>
+                      ref.read(chatProvider.notifier).startNewSession(),
+                  icon: const Icon(LucideIcons.plusCircle, size: 20),
+                  color: colorScheme.primary,
+                  tooltip: 'New Chat',
+                ),
+              ],
             ),
           ),
           const SizedBox(height: AppSizes.xl),
           Expanded(
-            child: ListView.builder(
-              itemCount: 5,
-              padding: const EdgeInsets.symmetric(horizontal: AppSizes.m),
-              itemBuilder: (context, index) {
-                final isSelected = index == 0;
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: AppSizes.s),
-                  child: InkWell(
-                    onTap: () {},
-                    borderRadius: BorderRadius.circular(32), // ROUND_FULL
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 200),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: AppSizes.l,
-                        vertical: AppSizes.m,
-                      ),
-                      decoration: BoxDecoration(
-                        color: isSelected 
-                            ? AppColors.surfaceHigh 
-                            : Colors.transparent,
-                        borderRadius: BorderRadius.circular(32),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.chat_bubble_outline,
-                            size: 18,
-                            color: isSelected 
-                                ? AppColors.primary 
-                                : AppColors.onSurfaceVariant,
-                          ),
-                          const SizedBox(width: AppSizes.m),
-                          Expanded(
-                            child: Text(
-                              'Recent Chat ${index + 1}',
-                              style: TextStyle(
-                                color: isSelected 
-                                    ? AppColors.onSurface 
-                                    : AppColors.onSurfaceVariant,
-                                fontSize: 13,
-                                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
+            child: sessions.isEmpty
+                ? Center(
+                    child: Text(
+                      'No history yet',
+                      style: TextStyle(
+                        color: colorScheme.onSurfaceVariant
+                            .withValues(alpha: 0.5),
                       ),
                     ),
+                  )
+                : ListView.builder(
+                    itemCount: sessions.length,
+                    padding: const EdgeInsets.symmetric(horizontal: AppSizes.m),
+                    itemBuilder: (context, index) {
+                      final session = sessions[index];
+                      final isSelected =
+                          chatState.sessionId == session.sessionId;
+
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: AppSizes.s),
+                        child: InkWell(
+                          onTap: () {
+                            ref
+                                .read(chatProvider.notifier)
+                                .loadSession(session.sessionId);
+                            if (Scaffold.of(context).isDrawerOpen) {
+                              Navigator.pop(context);
+                            }
+                          },
+                          borderRadius: BorderRadius.circular(32),
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 200),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: AppSizes.l,
+                              vertical: AppSizes.m,
+                            ),
+                            decoration: BoxDecoration(
+                              color: isSelected
+                                  ? colorScheme.surfaceContainerHigh
+                                  : Colors.transparent,
+                              borderRadius: BorderRadius.circular(32),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  isSelected
+                                      ? LucideIcons.messageSquare
+                                      : LucideIcons.messageCircle,
+                                  size: 18,
+                                  color: isSelected
+                                      ? colorScheme.primary
+                                      : colorScheme.onSurfaceVariant,
+                                ),
+                                const SizedBox(width: AppSizes.m),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        session.title,
+                                        style: TextStyle(
+                                          color: isSelected
+                                              ? colorScheme.onSurface
+                                              : colorScheme.onSurfaceVariant,
+                                          fontSize: 13,
+                                          fontWeight: isSelected
+                                              ? FontWeight.w600
+                                              : FontWeight.w400,
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      Text(
+                                        _formatDate(session.lastMessageAt),
+                                        style: TextStyle(
+                                          color: colorScheme.onSurfaceVariant
+                                              .withValues(alpha: 0.5),
+                                          fontSize: 10,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    },
                   ),
-                );
-              },
-            ),
           ),
           // Bottom Actions
           Padding(
@@ -92,12 +146,12 @@ class ChatHistorySidebar extends StatelessWidget {
             child: Column(
               children: [
                 _SidebarAction(
-                  icon: Icons.explore_outlined,
-                  label: 'Discovery',
-                  onTap: () {},
+                  icon: LucideIcons.history,
+                  label: 'History & Explore',
+                  onTap: () => context.push(RouteNames.history),
                 ),
                 _SidebarAction(
-                  icon: Icons.settings_outlined,
+                  icon: LucideIcons.settings,
                   label: 'System Preferences',
                   onTap: () => context.push(RouteNames.settings),
                 ),
@@ -107,6 +161,16 @@ class ChatHistorySidebar extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  String _formatDate(DateTime date) {
+    final now = DateTime.now();
+    if (date.year == now.year &&
+        date.month == now.month &&
+        date.day == now.day) {
+      return '${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
+    }
+    return '${date.month}/${date.day}';
   }
 }
 
@@ -123,6 +187,8 @@ class _SidebarAction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(32),
@@ -133,12 +199,12 @@ class _SidebarAction extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Icon(icon, size: 20, color: AppColors.onSurfaceVariant),
+            Icon(icon, size: 20, color: colorScheme.onSurfaceVariant),
             const SizedBox(width: AppSizes.m),
             Text(
               label,
-              style: GoogleFonts.inter(
-                color: AppColors.onSurfaceVariant,
+              style: TextStyle(
+                color: colorScheme.onSurfaceVariant,
                 fontSize: 13,
                 fontWeight: FontWeight.w500,
               ),

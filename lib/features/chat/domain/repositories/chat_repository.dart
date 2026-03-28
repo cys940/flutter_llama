@@ -1,3 +1,4 @@
+import '../entities/message_entity.dart';
 import '../entities/session_entity.dart';
 
 /// 채팅 데이터 영속성을 관리하기 위한 레포지토리 인터페이스입니다.
@@ -7,7 +8,11 @@ abstract class ChatRepository {
   Future<void> loadModel(String modelPath);
 
   /// 메시지를 전송하고 응답 스트림을 반환합니다.
-  Stream<String> sendMessageStream(String text);
+  Stream<String> sendMessageStream(
+    String text, {
+    double? temperature,
+    int? maxTokens,
+  });
 
   /// 모든 채팅 세션 목록을 반환합니다.
   Future<List<SessionEntity>> getSessions();
@@ -21,6 +26,9 @@ abstract class ChatRepository {
   /// 특정 세션을 삭제합니다.
   Future<void> deleteSession(String sessionId);
 
-  /// 새로운 세션을 생성합니다. (기본 정보 저장)
+  /// 새로운 세션을 생성합니다. (기력 저장)
   Future<void> createSession(SessionEntity session);
+
+  /// 기존 엔진의 대화 세션을 초기화합니다.
+  void resetSession();
 }

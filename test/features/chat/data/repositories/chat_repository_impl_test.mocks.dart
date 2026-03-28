@@ -8,6 +8,8 @@ import 'dart:async' as _i3;
 import 'package:local_ai_chat/features/chat/data/datasources/chat_local_data_source.dart'
     as _i2;
 import 'package:local_ai_chat/features/chat/data/datasources/llama_data_source.dart'
+    as _i6;
+import 'package:local_ai_chat/features/chat/domain/entities/message_entity.dart'
     as _i5;
 import 'package:local_ai_chat/features/chat/domain/entities/session_entity.dart'
     as _i4;
@@ -48,17 +50,17 @@ class MockChatLocalDataSource extends _i1.Mock
           as _i3.Future<List<_i4.SessionEntity>>);
 
   @override
-  _i3.Future<List<_i4.MessageEntity>> getMessages(String? sessionId) =>
+  _i3.Future<List<_i5.MessageEntity>> getMessages(String? sessionId) =>
       (super.noSuchMethod(
             Invocation.method(#getMessages, [sessionId]),
-            returnValue: _i3.Future<List<_i4.MessageEntity>>.value(
-              <_i4.MessageEntity>[],
+            returnValue: _i3.Future<List<_i5.MessageEntity>>.value(
+              <_i5.MessageEntity>[],
             ),
           )
-          as _i3.Future<List<_i4.MessageEntity>>);
+          as _i3.Future<List<_i5.MessageEntity>>);
 
   @override
-  _i3.Future<void> saveMessage(String? sessionId, _i4.MessageEntity? message) =>
+  _i3.Future<void> saveMessage(String? sessionId, _i5.MessageEntity? message) =>
       (super.noSuchMethod(
             Invocation.method(#saveMessage, [sessionId, message]),
             returnValue: _i3.Future<void>.value(),
@@ -88,7 +90,7 @@ class MockChatLocalDataSource extends _i1.Mock
 /// A class which mocks [LlamaDataSource].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockLlamaDataSource extends _i1.Mock implements _i5.LlamaDataSource {
+class MockLlamaDataSource extends _i1.Mock implements _i6.LlamaDataSource {
   MockLlamaDataSource() {
     _i1.throwOnMissingStub(this);
   }
@@ -103,9 +105,23 @@ class MockLlamaDataSource extends _i1.Mock implements _i5.LlamaDataSource {
           as _i3.Future<void>);
 
   @override
-  _i3.Stream<String> generateResponse(String? prompt) =>
+  void startNewSession() => super.noSuchMethod(
+    Invocation.method(#startNewSession, []),
+    returnValueForMissingStub: null,
+  );
+
+  @override
+  _i3.Stream<String> generateResponse(
+    String? prompt, {
+    double? temperature,
+    int? maxTokens,
+  }) =>
       (super.noSuchMethod(
-            Invocation.method(#generateResponse, [prompt]),
+            Invocation.method(
+              #generateResponse,
+              [prompt],
+              {#temperature: temperature, #maxTokens: maxTokens},
+            ),
             returnValue: _i3.Stream<String>.empty(),
           )
           as _i3.Stream<String>);

@@ -5,6 +5,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i3;
 
+import 'package:local_ai_chat/features/chat/domain/entities/message_entity.dart'
+    as _i5;
 import 'package:local_ai_chat/features/chat/domain/entities/session_entity.dart'
     as _i4;
 import 'package:local_ai_chat/features/chat/domain/repositories/chat_repository.dart'
@@ -44,9 +46,17 @@ class MockChatRepository extends _i1.Mock implements _i2.ChatRepository {
           as _i3.Future<void>);
 
   @override
-  _i3.Stream<String> sendMessageStream(String? text) =>
+  _i3.Stream<String> sendMessageStream(
+    String? text, {
+    double? temperature,
+    int? maxTokens,
+  }) =>
       (super.noSuchMethod(
-            Invocation.method(#sendMessageStream, [text]),
+            Invocation.method(
+              #sendMessageStream,
+              [text],
+              {#temperature: temperature, #maxTokens: maxTokens},
+            ),
             returnValue: _i3.Stream<String>.empty(),
           )
           as _i3.Stream<String>);
@@ -62,17 +72,17 @@ class MockChatRepository extends _i1.Mock implements _i2.ChatRepository {
           as _i3.Future<List<_i4.SessionEntity>>);
 
   @override
-  _i3.Future<List<_i4.MessageEntity>> getMessages(String? sessionId) =>
+  _i3.Future<List<_i5.MessageEntity>> getMessages(String? sessionId) =>
       (super.noSuchMethod(
             Invocation.method(#getMessages, [sessionId]),
-            returnValue: _i3.Future<List<_i4.MessageEntity>>.value(
-              <_i4.MessageEntity>[],
+            returnValue: _i3.Future<List<_i5.MessageEntity>>.value(
+              <_i5.MessageEntity>[],
             ),
           )
-          as _i3.Future<List<_i4.MessageEntity>>);
+          as _i3.Future<List<_i5.MessageEntity>>);
 
   @override
-  _i3.Future<void> saveMessage(String? sessionId, _i4.MessageEntity? message) =>
+  _i3.Future<void> saveMessage(String? sessionId, _i5.MessageEntity? message) =>
       (super.noSuchMethod(
             Invocation.method(#saveMessage, [sessionId, message]),
             returnValue: _i3.Future<void>.value(),
@@ -97,4 +107,10 @@ class MockChatRepository extends _i1.Mock implements _i2.ChatRepository {
             returnValueForMissingStub: _i3.Future<void>.value(),
           )
           as _i3.Future<void>);
+
+  @override
+  void resetSession() => super.noSuchMethod(
+    Invocation.method(#resetSession, []),
+    returnValueForMissingStub: null,
+  );
 }

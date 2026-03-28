@@ -11,30 +11,33 @@ part of 'message_entity.dart';
 
 // dart format off
 T _$identity<T>(T value) => value;
+
 /// @nodoc
 mixin _$MessageEntity {
 
- String get id; String get text; bool get isUser; DateTime get timestamp;
+ String get id;@JsonKey(includeToJson: true) String? get sessionId; String get text;@JsonKey(name: 'isUser', fromJson: _boolFromInt, toJson: _boolToInt) bool get isUser; DateTime get timestamp;
 /// Create a copy of MessageEntity
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
 $MessageEntityCopyWith<MessageEntity> get copyWith => _$MessageEntityCopyWithImpl<MessageEntity>(this as MessageEntity, _$identity);
 
+  /// Serializes this MessageEntity to a JSON map.
+  Map<String, dynamic> toJson();
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is MessageEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.text, text) || other.text == text)&&(identical(other.isUser, isUser) || other.isUser == isUser)&&(identical(other.timestamp, timestamp) || other.timestamp == timestamp));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is MessageEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.sessionId, sessionId) || other.sessionId == sessionId)&&(identical(other.text, text) || other.text == text)&&(identical(other.isUser, isUser) || other.isUser == isUser)&&(identical(other.timestamp, timestamp) || other.timestamp == timestamp));
 }
 
-
+@JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,text,isUser,timestamp);
+int get hashCode => Object.hash(runtimeType,id,sessionId,text,isUser,timestamp);
 
 @override
 String toString() {
-  return 'MessageEntity(id: $id, text: $text, isUser: $isUser, timestamp: $timestamp)';
+  return 'MessageEntity(id: $id, sessionId: $sessionId, text: $text, isUser: $isUser, timestamp: $timestamp)';
 }
 
 
@@ -45,7 +48,7 @@ abstract mixin class $MessageEntityCopyWith<$Res>  {
   factory $MessageEntityCopyWith(MessageEntity value, $Res Function(MessageEntity) _then) = _$MessageEntityCopyWithImpl;
 @useResult
 $Res call({
- String id, String text, bool isUser, DateTime timestamp
+ String id,@JsonKey(includeToJson: true) String? sessionId, String text,@JsonKey(name: 'isUser', fromJson: _boolFromInt, toJson: _boolToInt) bool isUser, DateTime timestamp
 });
 
 
@@ -62,10 +65,11 @@ class _$MessageEntityCopyWithImpl<$Res>
 
 /// Create a copy of MessageEntity
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? text = null,Object? isUser = null,Object? timestamp = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? sessionId = freezed,Object? text = null,Object? isUser = null,Object? timestamp = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,text: null == text ? _self.text : text // ignore: cast_nullable_to_non_nullable
+as String,sessionId: freezed == sessionId ? _self.sessionId : sessionId // ignore: cast_nullable_to_non_nullable
+as String?,text: null == text ? _self.text : text // ignore: cast_nullable_to_non_nullable
 as String,isUser: null == isUser ? _self.isUser : isUser // ignore: cast_nullable_to_non_nullable
 as bool,timestamp: null == timestamp ? _self.timestamp : timestamp // ignore: cast_nullable_to_non_nullable
 as DateTime,
@@ -153,10 +157,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String text,  bool isUser,  DateTime timestamp)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(includeToJson: true)  String? sessionId,  String text, @JsonKey(name: 'isUser', fromJson: _boolFromInt, toJson: _boolToInt)  bool isUser,  DateTime timestamp)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _MessageEntity() when $default != null:
-return $default(_that.id,_that.text,_that.isUser,_that.timestamp);case _:
+return $default(_that.id,_that.sessionId,_that.text,_that.isUser,_that.timestamp);case _:
   return orElse();
 
 }
@@ -174,10 +178,10 @@ return $default(_that.id,_that.text,_that.isUser,_that.timestamp);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String text,  bool isUser,  DateTime timestamp)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(includeToJson: true)  String? sessionId,  String text, @JsonKey(name: 'isUser', fromJson: _boolFromInt, toJson: _boolToInt)  bool isUser,  DateTime timestamp)  $default,) {final _that = this;
 switch (_that) {
 case _MessageEntity():
-return $default(_that.id,_that.text,_that.isUser,_that.timestamp);case _:
+return $default(_that.id,_that.sessionId,_that.text,_that.isUser,_that.timestamp);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -194,10 +198,10 @@ return $default(_that.id,_that.text,_that.isUser,_that.timestamp);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String text,  bool isUser,  DateTime timestamp)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(includeToJson: true)  String? sessionId,  String text, @JsonKey(name: 'isUser', fromJson: _boolFromInt, toJson: _boolToInt)  bool isUser,  DateTime timestamp)?  $default,) {final _that = this;
 switch (_that) {
 case _MessageEntity() when $default != null:
-return $default(_that.id,_that.text,_that.isUser,_that.timestamp);case _:
+return $default(_that.id,_that.sessionId,_that.text,_that.isUser,_that.timestamp);case _:
   return null;
 
 }
@@ -206,15 +210,16 @@ return $default(_that.id,_that.text,_that.isUser,_that.timestamp);case _:
 }
 
 /// @nodoc
-
+@JsonSerializable()
 
 class _MessageEntity implements MessageEntity {
-  const _MessageEntity({required this.id, required this.text, required this.isUser, required this.timestamp});
-  
+  const _MessageEntity({required this.id, @JsonKey(includeToJson: true) this.sessionId, required this.text, @JsonKey(name: 'isUser', fromJson: _boolFromInt, toJson: _boolToInt) required this.isUser, required this.timestamp});
+  factory _MessageEntity.fromJson(Map<String, dynamic> json) => _$MessageEntityFromJson(json);
 
 @override final  String id;
+@override@JsonKey(includeToJson: true) final  String? sessionId;
 @override final  String text;
-@override final  bool isUser;
+@override@JsonKey(name: 'isUser', fromJson: _boolFromInt, toJson: _boolToInt) final  bool isUser;
 @override final  DateTime timestamp;
 
 /// Create a copy of MessageEntity
@@ -223,20 +228,23 @@ class _MessageEntity implements MessageEntity {
 @pragma('vm:prefer-inline')
 _$MessageEntityCopyWith<_MessageEntity> get copyWith => __$MessageEntityCopyWithImpl<_MessageEntity>(this, _$identity);
 
-
+@override
+Map<String, dynamic> toJson() {
+  return _$MessageEntityToJson(this, );
+}
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _MessageEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.text, text) || other.text == text)&&(identical(other.isUser, isUser) || other.isUser == isUser)&&(identical(other.timestamp, timestamp) || other.timestamp == timestamp));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _MessageEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.sessionId, sessionId) || other.sessionId == sessionId)&&(identical(other.text, text) || other.text == text)&&(identical(other.isUser, isUser) || other.isUser == isUser)&&(identical(other.timestamp, timestamp) || other.timestamp == timestamp));
 }
 
-
+@JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,text,isUser,timestamp);
+int get hashCode => Object.hash(runtimeType,id,sessionId,text,isUser,timestamp);
 
 @override
 String toString() {
-  return 'MessageEntity(id: $id, text: $text, isUser: $isUser, timestamp: $timestamp)';
+  return 'MessageEntity(id: $id, sessionId: $sessionId, text: $text, isUser: $isUser, timestamp: $timestamp)';
 }
 
 
@@ -247,7 +255,7 @@ abstract mixin class _$MessageEntityCopyWith<$Res> implements $MessageEntityCopy
   factory _$MessageEntityCopyWith(_MessageEntity value, $Res Function(_MessageEntity) _then) = __$MessageEntityCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String text, bool isUser, DateTime timestamp
+ String id,@JsonKey(includeToJson: true) String? sessionId, String text,@JsonKey(name: 'isUser', fromJson: _boolFromInt, toJson: _boolToInt) bool isUser, DateTime timestamp
 });
 
 
@@ -264,10 +272,11 @@ class __$MessageEntityCopyWithImpl<$Res>
 
 /// Create a copy of MessageEntity
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? text = null,Object? isUser = null,Object? timestamp = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? sessionId = freezed,Object? text = null,Object? isUser = null,Object? timestamp = null,}) {
   return _then(_MessageEntity(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,text: null == text ? _self.text : text // ignore: cast_nullable_to_non_nullable
+as String,sessionId: freezed == sessionId ? _self.sessionId : sessionId // ignore: cast_nullable_to_non_nullable
+as String?,text: null == text ? _self.text : text // ignore: cast_nullable_to_non_nullable
 as String,isUser: null == isUser ? _self.isUser : isUser // ignore: cast_nullable_to_non_nullable
 as bool,timestamp: null == timestamp ? _self.timestamp : timestamp // ignore: cast_nullable_to_non_nullable
 as DateTime,

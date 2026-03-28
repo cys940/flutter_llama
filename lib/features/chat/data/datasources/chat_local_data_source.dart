@@ -1,3 +1,4 @@
+import '../../domain/entities/message_entity.dart';
 import '../../domain/entities/session_entity.dart';
 
 /// 로컬 데이터베이스(sqflite)와의 직접적인 상호작용을 담당하는 데이터 소스 인터페이스입니다.
