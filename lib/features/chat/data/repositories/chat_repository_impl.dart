@@ -1,63 +1,51 @@
-import 'dart:async';
-import 'package:uuid/uuid.dart';
-import '../../domain/entities/chat_message.dart';
-import '../../domain/entities/chat_session.dart';
+import 'package:injectable/injectable.dart';
+import '../../domain/entities/session_entity.dart';
 import '../../domain/repositories/chat_repository.dart';
+import '../datasources/chat_local_data_source.dart';
 import '../datasources/llama_data_source.dart';
 
+@LazySingleton(as: ChatRepository)
 class ChatRepositoryImpl implements ChatRepository {
-  ChatRepositoryImpl(this._dataSource);
+  final ChatLocalDataSource localDataSource;
+  final LlamaDataSource llamaDataSource;
 
-  final LlamaDataSource _dataSource;
-  final List<ChatMessage> _messages = [];
-  final _uuid = const Uuid();
+  ChatRepositoryImpl({
+    required this.localDataSource,
+    required this.llamaDataSource,
+  });
 
   @override
   Future<void> loadModel(String modelPath) async {
-    await _dataSource.init(modelPath);
+    return llamaDataSource.init(modelPath);
   }
 
   @override
-  Stream<String> sendMessageStream(String message) async* {
-    // 사용자의 메시지를 목록에 추가
-    final userMessage = ChatMessage(
-      id: _uuid.v4(),
-      text: message,
-      isUser: true,
-      timestamp: DateTime.now(),
-    );
-    _messages.add(userMessage);
-
-    // AI의 응답을 스트림으로 받아오기
-    var fullResponse = '';
-    final responses = _dataSource.generateResponse(message);
-    await for (final chunk in responses) {
-      fullResponse += chunk;
-      yield chunk;
-    }
-
-    // 최종 응답을 목록에 추가
-    final aiMessage = ChatMessage(
-      id: _uuid.v4(),
-      text: fullResponse,
-      isUser: false,
-      timestamp: DateTime.now(),
-    );
-    _messages.add(aiMessage);
+  Stream<String> sendMessageStream(String text) {
+    return llamaDataSource.generateResponse(text);
   }
 
   @override
-  Future<List<ChatMessage>> getMessages() async {
-    return List.unmodifiable(_messages);
+  Future<void> createSession(SessionEntity session) async {
+    return localDataSource.createOrUpdateSession(session);
   }
 
   @override
-  Future<ChatSession> createSession() async {
-    _messages.clear();
-    return ChatSession(
-      id: _uuid.v4(),
-      createdAt: DateTime.now(),
-      messages: [],
-    );
+  Future<void> deleteSession(String sessionId) async {
+    return localDataSource.deleteSession(sessionId);
+  }
+
+  @override
+  Future<List<MessageEntity>> getMessages(String sessionId) async {
+    return localDataSource.getMessages(sessionId);
+  }
+
+  @override
+  Future<List<SessionEntity>> getSessions() async {
+    return localDataSource.getSessions();
+  }
+
+  @override
+  Future<void> saveMessage(String sessionId, MessageEntity message) async {
+    return localDataSource.saveMessage(sessionId, message);
   }
 }

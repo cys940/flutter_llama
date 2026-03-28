@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:llamadart/llamadart.dart';
+import 'package:injectable/injectable.dart';
 
+@lazySingleton
 class LlamaDataSource {
   LlamaEngine? _engine;
 

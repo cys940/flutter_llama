@@ -3,7 +3,7 @@
 // ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
-part of 'chat_message.dart';
+part of 'message_entity.dart';
 
 // **************************************************************************
 // FreezedGenerator
@@ -11,41 +11,38 @@ part of 'chat_message.dart';
 
 // dart format off
 T _$identity<T>(T value) => value;
-
 /// @nodoc
-mixin _$ChatMessage {
+mixin _$MessageEntity {
 
  String get id; String get text; bool get isUser; DateTime get timestamp;
-/// Create a copy of ChatMessage
+/// Create a copy of MessageEntity
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-$ChatMessageCopyWith<ChatMessage> get copyWith => _$ChatMessageCopyWithImpl<ChatMessage>(this as ChatMessage, _$identity);
+$MessageEntityCopyWith<MessageEntity> get copyWith => _$MessageEntityCopyWithImpl<MessageEntity>(this as MessageEntity, _$identity);
 
-  /// Serializes this ChatMessage to a JSON map.
-  Map<String, dynamic> toJson();
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChatMessage&&(identical(other.id, id) || other.id == id)&&(identical(other.text, text) || other.text == text)&&(identical(other.isUser, isUser) || other.isUser == isUser)&&(identical(other.timestamp, timestamp) || other.timestamp == timestamp));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is MessageEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.text, text) || other.text == text)&&(identical(other.isUser, isUser) || other.isUser == isUser)&&(identical(other.timestamp, timestamp) || other.timestamp == timestamp));
 }
 
-@JsonKey(includeFromJson: false, includeToJson: false)
+
 @override
 int get hashCode => Object.hash(runtimeType,id,text,isUser,timestamp);
 
 @override
 String toString() {
-  return 'ChatMessage(id: $id, text: $text, isUser: $isUser, timestamp: $timestamp)';
+  return 'MessageEntity(id: $id, text: $text, isUser: $isUser, timestamp: $timestamp)';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class $ChatMessageCopyWith<$Res>  {
-  factory $ChatMessageCopyWith(ChatMessage value, $Res Function(ChatMessage) _then) = _$ChatMessageCopyWithImpl;
+abstract mixin class $MessageEntityCopyWith<$Res>  {
+  factory $MessageEntityCopyWith(MessageEntity value, $Res Function(MessageEntity) _then) = _$MessageEntityCopyWithImpl;
 @useResult
 $Res call({
  String id, String text, bool isUser, DateTime timestamp
@@ -56,14 +53,14 @@ $Res call({
 
 }
 /// @nodoc
-class _$ChatMessageCopyWithImpl<$Res>
-    implements $ChatMessageCopyWith<$Res> {
-  _$ChatMessageCopyWithImpl(this._self, this._then);
+class _$MessageEntityCopyWithImpl<$Res>
+    implements $MessageEntityCopyWith<$Res> {
+  _$MessageEntityCopyWithImpl(this._self, this._then);
 
-  final ChatMessage _self;
-  final $Res Function(ChatMessage) _then;
+  final MessageEntity _self;
+  final $Res Function(MessageEntity) _then;
 
-/// Create a copy of ChatMessage
+/// Create a copy of MessageEntity
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? text = null,Object? isUser = null,Object? timestamp = null,}) {
   return _then(_self.copyWith(
@@ -78,8 +75,8 @@ as DateTime,
 }
 
 
-/// Adds pattern-matching-related methods to [ChatMessage].
-extension ChatMessagePatterns on ChatMessage {
+/// Adds pattern-matching-related methods to [MessageEntity].
+extension MessageEntityPatterns on MessageEntity {
 /// A variant of `map` that fallback to returning `orElse`.
 ///
 /// It is equivalent to doing:
@@ -92,10 +89,10 @@ extension ChatMessagePatterns on ChatMessage {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _ChatMessage value)?  $default,{required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _MessageEntity value)?  $default,{required TResult orElse(),}){
 final _that = this;
 switch (_that) {
-case _ChatMessage() when $default != null:
+case _MessageEntity() when $default != null:
 return $default(_that);case _:
   return orElse();
 
@@ -114,10 +111,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _ChatMessage value)  $default,){
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _MessageEntity value)  $default,){
 final _that = this;
 switch (_that) {
-case _ChatMessage():
+case _MessageEntity():
 return $default(_that);case _:
   throw StateError('Unexpected subclass');
 
@@ -135,10 +132,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _ChatMessage value)?  $default,){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _MessageEntity value)?  $default,){
 final _that = this;
 switch (_that) {
-case _ChatMessage() when $default != null:
+case _MessageEntity() when $default != null:
 return $default(_that);case _:
   return null;
 
@@ -158,7 +155,7 @@ return $default(_that);case _:
 
 @optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String text,  bool isUser,  DateTime timestamp)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
-case _ChatMessage() when $default != null:
+case _MessageEntity() when $default != null:
 return $default(_that.id,_that.text,_that.isUser,_that.timestamp);case _:
   return orElse();
 
@@ -179,7 +176,7 @@ return $default(_that.id,_that.text,_that.isUser,_that.timestamp);case _:
 
 @optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String text,  bool isUser,  DateTime timestamp)  $default,) {final _that = this;
 switch (_that) {
-case _ChatMessage():
+case _MessageEntity():
 return $default(_that.id,_that.text,_that.isUser,_that.timestamp);case _:
   throw StateError('Unexpected subclass');
 
@@ -199,7 +196,7 @@ return $default(_that.id,_that.text,_that.isUser,_that.timestamp);case _:
 
 @optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String text,  bool isUser,  DateTime timestamp)?  $default,) {final _that = this;
 switch (_that) {
-case _ChatMessage() when $default != null:
+case _MessageEntity() when $default != null:
 return $default(_that.id,_that.text,_that.isUser,_that.timestamp);case _:
   return null;
 
@@ -209,48 +206,45 @@ return $default(_that.id,_that.text,_that.isUser,_that.timestamp);case _:
 }
 
 /// @nodoc
-@JsonSerializable()
 
-class _ChatMessage implements ChatMessage {
-  const _ChatMessage({required this.id, required this.text, required this.isUser, required this.timestamp});
-  factory _ChatMessage.fromJson(Map<String, dynamic> json) => _$ChatMessageFromJson(json);
+
+class _MessageEntity implements MessageEntity {
+  const _MessageEntity({required this.id, required this.text, required this.isUser, required this.timestamp});
+  
 
 @override final  String id;
 @override final  String text;
 @override final  bool isUser;
 @override final  DateTime timestamp;
 
-/// Create a copy of ChatMessage
+/// Create a copy of MessageEntity
 /// with the given fields replaced by the non-null parameter values.
 @override @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-_$ChatMessageCopyWith<_ChatMessage> get copyWith => __$ChatMessageCopyWithImpl<_ChatMessage>(this, _$identity);
+_$MessageEntityCopyWith<_MessageEntity> get copyWith => __$MessageEntityCopyWithImpl<_MessageEntity>(this, _$identity);
 
-@override
-Map<String, dynamic> toJson() {
-  return _$ChatMessageToJson(this, );
-}
+
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ChatMessage&&(identical(other.id, id) || other.id == id)&&(identical(other.text, text) || other.text == text)&&(identical(other.isUser, isUser) || other.isUser == isUser)&&(identical(other.timestamp, timestamp) || other.timestamp == timestamp));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _MessageEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.text, text) || other.text == text)&&(identical(other.isUser, isUser) || other.isUser == isUser)&&(identical(other.timestamp, timestamp) || other.timestamp == timestamp));
 }
 
-@JsonKey(includeFromJson: false, includeToJson: false)
+
 @override
 int get hashCode => Object.hash(runtimeType,id,text,isUser,timestamp);
 
 @override
 String toString() {
-  return 'ChatMessage(id: $id, text: $text, isUser: $isUser, timestamp: $timestamp)';
+  return 'MessageEntity(id: $id, text: $text, isUser: $isUser, timestamp: $timestamp)';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class _$ChatMessageCopyWith<$Res> implements $ChatMessageCopyWith<$Res> {
-  factory _$ChatMessageCopyWith(_ChatMessage value, $Res Function(_ChatMessage) _then) = __$ChatMessageCopyWithImpl;
+abstract mixin class _$MessageEntityCopyWith<$Res> implements $MessageEntityCopyWith<$Res> {
+  factory _$MessageEntityCopyWith(_MessageEntity value, $Res Function(_MessageEntity) _then) = __$MessageEntityCopyWithImpl;
 @override @useResult
 $Res call({
  String id, String text, bool isUser, DateTime timestamp
@@ -261,17 +255,17 @@ $Res call({
 
 }
 /// @nodoc
-class __$ChatMessageCopyWithImpl<$Res>
-    implements _$ChatMessageCopyWith<$Res> {
-  __$ChatMessageCopyWithImpl(this._self, this._then);
+class __$MessageEntityCopyWithImpl<$Res>
+    implements _$MessageEntityCopyWith<$Res> {
+  __$MessageEntityCopyWithImpl(this._self, this._then);
 
-  final _ChatMessage _self;
-  final $Res Function(_ChatMessage) _then;
+  final _MessageEntity _self;
+  final $Res Function(_MessageEntity) _then;
 
-/// Create a copy of ChatMessage
+/// Create a copy of MessageEntity
 /// with the given fields replaced by the non-null parameter values.
 @override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? text = null,Object? isUser = null,Object? timestamp = null,}) {
-  return _then(_ChatMessage(
+  return _then(_MessageEntity(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,text: null == text ? _self.text : text // ignore: cast_nullable_to_non_nullable
 as String,isUser: null == isUser ? _self.isUser : isUser // ignore: cast_nullable_to_non_nullable
