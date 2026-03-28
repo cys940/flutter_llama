@@ -4,6 +4,8 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../features/chat/presentation/screens/chat_screen.dart';
 import 'route_names.dart';
 
+import '../../features/chat/presentation/screens/settings_screen.dart';
+
 part 'app_router.g.dart';
 
 @riverpod
@@ -16,7 +18,10 @@ GoRouter appRouter(Ref ref) {
         path: RouteNames.chat,
         builder: (context, state) => const ChatScreen(),
       ),
-      // 추후 설정 화면 등을 이곳에 추가할 수 있습니다.
+      GoRoute(
+        path: RouteNames.settings,
+        builder: (context, state) => const SettingsScreen(),
+      ),
     ],
     errorBuilder: (context, state) => Scaffold(
       body: Center(
