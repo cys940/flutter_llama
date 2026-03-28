@@ -9,17 +9,19 @@
 - **완전한 로컬 추론**: 인터넷 연결 없이도 기기 내부에서 직접 LLM(GGUF 포맷)을 구동합니다.
 - **실시간 스트리밍**: AI의 응답을 글자 단위로 실시간으로 확인할 수 있는 스트리밍 인터페이스를 제공합니다.
 - **멀티플랫폼 지원**: iOS, Android, macOS, Windows, Linux, Web(WebGPU)을 모두 지원하는 강력한 호환성을 자랑합니다.
+- **반응형 레이아웃**: 모바일(Drawer), 태블릿/데스크탑(고정 사이드바 및 Max Width) 등 모든 기기 크기에 최적화된 뛰어난 UX를 제공합니다.
+- **플랫폼 최적화**: macOS(Impeller), Android(Vulkan GPU 가속) 등 각 플랫폼별 최고의 성능을 내도록 네이티브 레이어가 튜닝되어 있습니다.
 - **프리미엄 다크 모드**: 시각적인 편안함과 고급스러움을 강조한 독자적인 다크 모드 디자인 시스템이 적용되어 있습니다.
-- **모델 관리**: 다양한 GGUF 모델 파일을 사용자가 직접 선택하여 로드할 수 있는 유연한 구조입니다.
 
 ## 🛠 기술 스택
 
 - **Core**: Flutter, Dart
 - **AI Engine**: `llamadart` (Native Assets 기반, Metal/Vulkan/WebGPU 가속 지원)
+- **Responsive**: Custom Responsive Architecture (LayoutBuilder, MediaQuery, Breakpoint Helper)
 - **State Management**: `flutter_riverpod`, `riverpod_generator`
 - **Architecture**: Clean Architecture (Domain, Data, Presentation)
 - **Routing**: `go_router` (선언적 라우팅)
-- **UI & UX**: Google Fonts (Inter), Lucide Icons, Custom Design System
+- **UI & UX**: Google Fonts (Inter), Lucide Icons, Responsive Design System Tokens
 
 ## 🚀 시작하기
 
