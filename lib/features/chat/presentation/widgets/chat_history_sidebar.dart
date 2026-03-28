@@ -21,7 +21,7 @@ class ChatHistorySidebar extends ConsumerWidget {
     return Container(
       width: 280,
       decoration: const BoxDecoration(
-        color: AppColors.background,
+        color: Color(0xFF091328),
         border: Border(right: BorderSide(color: Colors.transparent, width: 0)),
       ),
       child: GlassDecorator(
@@ -65,40 +65,74 @@ class ChatHistorySidebar extends ConsumerWidget {
         children: [
           Row(
             children: [
-              const SignatureGradient(
-                child: Icon(LucideIcons.sparkles, size: 24, color: Colors.white),
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: design.primaryGradient,
+                  ),
+                ),
+                child: const Icon(LucideIcons.droplets, size: 20, color: Colors.white),
               ),
-              const SizedBox(width: 16),
-              Text(
-                'Stitch AI',
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: -1.0,
-                    ),
+              const SizedBox(width: 12),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Llama Intelligence',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          color: const Color(0xFFDEE5FF),
+                          fontWeight: FontWeight.w900,
+                          fontFamily: 'Plus Jakarta Sans',
+                        ),
+                  ),
+                  Text(
+                    'SOPHISTICATED CURATOR',
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          color: AppColors.onSurfaceVariant.withValues(alpha: 0.6),
+                          fontSize: 8,
+                          letterSpacing: 1.5,
+                          fontWeight: FontWeight.bold,
+                        ),
+                  ),
+                ],
               ),
             ],
           ),
           const SizedBox(height: 32),
           InkWell(
             onTap: () => ref.read(chatProvider.notifier).startNewSession(),
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(12),
             child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 14),
               decoration: BoxDecoration(
-                color: AppColors.primary.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: AppColors.primary.withValues(alpha: 0.2)),
+                gradient: LinearGradient(
+                  colors: design.primaryGradient,
+                ),
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: design.primaryGradient[0].withValues(alpha: 0.2),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
               ),
               child: const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(LucideIcons.plus, size: 18, color: AppColors.primary),
+                  Icon(LucideIcons.plusCircle, size: 18, color: Colors.white),
                   SizedBox(width: 12),
                   Text(
-                    'New Conversation',
+                    'New Chat',
                     style: TextStyle(
-                      color: AppColors.primary,
-                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w800,
                       fontSize: 14,
                     ),
                   ),
@@ -143,9 +177,9 @@ class ChatHistorySidebar extends ConsumerWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                 decoration: BoxDecoration(
                   color: isSelected
-                      ? AppColors.primary.withValues(alpha: 0.15)
+                      ? const Color(0xFF141F38)
                       : Colors.transparent,
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(
                   children: [
@@ -208,7 +242,7 @@ class ChatHistorySidebar extends ConsumerWidget {
           _SidebarAction(
             icon: LucideIcons.helpCircle,
             label: 'Help & FAQ',
-            onTap: () {},
+            onTap: () => context.push(RouteNames.helpFaq),
           ),
         ],
       ),

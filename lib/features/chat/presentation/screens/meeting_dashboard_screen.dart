@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../../../../core/theme/app_sizes.dart';
 import '../../../../core/widgets/design_decorators.dart';
 import '../../../../core/widgets/responsive_layout.dart';
+import '../../../../core/utils/responsive_helper.dart';
 import '../providers/meeting_provider.dart';
 import '../../domain/entities/action_item.dart';
 
@@ -28,10 +29,17 @@ class MeetingDashboardScreen extends ConsumerWidget {
         title: const Text('회의 리포트'),
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(LucideIcons.chevronLeft),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
+        leading: context.isMobile
+            ? IconButton(
+                icon: const Icon(LucideIcons.menu),
+                onPressed: () => Scaffold.of(context).openDrawer(),
+              )
+            : (Navigator.of(context).canPop()
+                ? IconButton(
+                    icon: const Icon(LucideIcons.chevronLeft),
+                    onPressed: () => Navigator.of(context).pop(),
+                  )
+                : null),
       ),
       body: SignatureGradient(
         child: SafeArea(

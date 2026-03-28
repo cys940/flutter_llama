@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/theme/app_sizes.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/design_decorators.dart';
 import '../../../../core/utils/responsive_helper.dart';
-import '../widgets/chat_history_sidebar.dart';
+import 'dart:ui';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -24,38 +25,28 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
-    return Scaffold(
-      backgroundColor: colorScheme.surface,
-      body: Row(
-        children: [
-          if (!context.isMobile) const ChatHistorySidebar(),
-          Expanded(
-            child: CustomScrollView(
-              slivers: [
-                _buildAppBar(context, colorScheme, textTheme),
-                SliverPadding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: context.responsive(AppSizes.l, tablet: AppSizes.xxl, desktop: 120.0),
-                    vertical: 32,
-                  ),
-                  sliver: SliverList(
-                    delegate: SliverChildListDelegate([
-                      _buildHeader(textTheme),
-                      const SizedBox(height: 48),
-                      _buildAppearanceSection(context, colorScheme, textTheme),
-                      const SizedBox(height: 64),
-                      _buildNeuralParametersSection(context, colorScheme, textTheme),
-                      const SizedBox(height: 64),
-                      _buildPrivacySection(context, colorScheme, textTheme),
-                      const SizedBox(height: 120),
-                    ]),
-                  ),
-                ),
-              ],
-            ),
+    return CustomScrollView(
+      slivers: [
+        _buildAppBar(context, colorScheme, textTheme),
+        SliverPadding(
+          padding: EdgeInsets.symmetric(
+            horizontal: context.responsive(AppSizes.l, tablet: AppSizes.xxl, desktop: 120.0),
+            vertical: 32,
           ),
-        ],
-      ),
+          sliver: SliverList(
+            delegate: SliverChildListDelegate([
+              _buildHeader(textTheme),
+              const SizedBox(height: 48),
+              _buildAppearanceSection(context, colorScheme, textTheme),
+              const SizedBox(height: 64),
+              _buildNeuralParametersSection(context, colorScheme, textTheme),
+              const SizedBox(height: 64),
+              _buildPrivacySection(context, colorScheme, textTheme),
+              const SizedBox(height: 120),
+            ]),
+          ),
+        ),
+      ],
     );
   }
 
@@ -65,6 +56,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
       backgroundColor: colorScheme.surface.withValues(alpha: 0.8),
       elevation: 0,
       centerTitle: false,
+      leading: context.isMobile
+          ? IconButton(
+              icon: const Icon(LucideIcons.menu),
+              onPressed: () => Scaffold.of(context).openDrawer(),
+            )
+          : null,
       title: Row(
         children: [
           SignatureGradient(
@@ -106,16 +103,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          '시스템 설정',
-          style: textTheme.displayLarge?.copyWith(
+          'System Preferences',
+          style: GoogleFonts.plusJakartaSans(
             fontSize: context.responsive(36.0, tablet: 48.0, desktop: 56.0),
-            fontWeight: FontWeight.w900,
+            fontWeight: FontWeight.w800,
+            color: AppColors.onSurface,
+            letterSpacing: -1.5,
           ),
         ),
         const SizedBox(height: 12),
         Text(
-          '디지털 큐레이터의 인터페이스와 지능 파라미터를 정밀하게 조정합니다.',
-          style: textTheme.bodyLarge?.copyWith(color: AppColors.onSurfaceVariant, fontSize: 18),
+          'Calibrate your digital curator\'s interface and intelligence parameters.',
+          style: GoogleFonts.inter(
+            color: AppColors.onSurfaceVariant,
+            fontSize: 18,
+            fontWeight: FontWeight.w400,
+          ),
         ),
       ],
     );
@@ -125,59 +128,58 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildSectionTitle(LucideIcons.eye, '인터페이스 미학', AppColors.secondary),
+        _buildSectionTitle(LucideIcons.eye, 'Interface Aesthetic', AppColors.secondary),
         const SizedBox(height: 24),
-        Row(
+        GridView.count(
+          crossAxisCount: context.isMobile ? 1 : 2,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          mainAxisSpacing: 24,
+          crossAxisSpacing: 24,
+          childAspectRatio: context.isMobile ? 1.8 : 2.2,
           children: [
-            Expanded(
-              child: _buildPreferenceCard(
-                colorScheme: colorScheme,
-                label: '테마 모드',
-                child: Container(
-                  padding: const EdgeInsets.all(4),
-                  decoration: BoxDecoration(
-                    color: colorScheme.surface,
-                    borderRadius: BorderRadius.circular(100),
-                  ),
-                  child: Row(
-                    children: [
-                      _buildThemeTab(LucideIcons.moon, '미드나잇', true),
-                      _buildThemeTab(LucideIcons.sun, '에테르', false),
-                    ],
-                  ),
+            _buildPreferenceCard(
+              colorScheme: colorScheme,
+              label: 'THEME MODE',
+              child: Container(
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: AppColors.background,
+                  borderRadius: BorderRadius.circular(100),
+                ),
+                child: Row(
+                  children: [
+                    _buildThemeTab(LucideIcons.moon, 'Midnight', true),
+                    _buildThemeTab(LucideIcons.sun, 'Ethereal', false),
+                  ],
                 ),
               ),
             ),
-            if (context.isTablet || context.isDesktop) ...[
-              const SizedBox(width: 24),
-              Expanded(
-                child: _buildPreferenceCard(
-                  colorScheme: colorScheme,
-                  label: '코어 레조넌스 (색상)',
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            _buildPreferenceCard(
+              colorScheme: colorScheme,
+              label: 'CORE RESONANCE',
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
                     children: [
-                      Row(
-                        children: [
-                          _buildColorDot(AppColors.primary, true),
-                          _buildColorDot(AppColors.secondary, false),
-                          _buildColorDot(AppColors.tertiary, false),
-                          _buildColorDot(AppColors.error, false),
-                        ],
-                      ),
-                      Text(
-                        '인디고 드리프트', 
-                        style: TextStyle(
-                          fontSize: 11, 
-                          fontWeight: FontWeight.bold, 
-                          color: colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
-                        ),
-                      ),
+                      _buildColorDot(AppColors.primary, true),
+                      _buildColorDot(AppColors.secondary, false),
+                      _buildColorDot(AppColors.tertiary, false),
+                      _buildColorDot(AppColors.error, false),
                     ],
                   ),
-                ),
+                  Text(
+                    'Indigo Drift',
+                    style: GoogleFonts.inter(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.onSurfaceVariant,
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ],
         ),
       ],
@@ -188,32 +190,42 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildSectionTitle(LucideIcons.brain, '신경망 매개변수', AppColors.tertiary),
+        _buildSectionTitle(LucideIcons.brain, 'Neural Parameters', AppColors.tertiary),
         const SizedBox(height: 24),
-        GlassDecorator(
-          borderRadius: BorderRadius.circular(32),
-          child: Padding(
-            padding: const EdgeInsets.all(32),
-            child: Column(
-              children: [
-                _buildSliderRow(
-                  title: '창의성 온도 (Temperature)',
-                  desc: '높은 값일수록 더욱 다양하고 창의적인 답변을 생성합니다.',
-                  value: _temperature,
-                  color: AppColors.primary,
-                  onChanged: (v) => setState(() => _temperature = v),
-                ),
-                const SizedBox(height: 48),
-                _buildSliderRow(
-                  title: '핵 샘플링 (Top-P)',
-                  desc: '누적 확률을 기반으로 사용될 단어의 범위를 제한합니다.',
-                  value: _topP,
-                  color: AppColors.tertiary,
-                  onChanged: (v) => setState(() => _topP = v),
-                ),
-                const SizedBox(height: 48),
-                _buildModelSelector(colorScheme),
-              ],
+        ClipRRect(
+          borderRadius: BorderRadius.circular(24),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 24, sigmaY: 24),
+            child: Container(
+              padding: const EdgeInsets.all(32),
+              decoration: BoxDecoration(
+                color: AppColors.surfaceVariant.withValues(alpha: 0.6),
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(color: AppColors.outlineVariant),
+              ),
+              child: Column(
+                children: [
+                  _buildSliderRow(
+                    title: 'Creativity Temperature',
+                    desc: 'Higher values result in more divergent and creative responses.',
+                    value: _temperature,
+                    color: AppColors.primary,
+                    gradient: AppColors.primaryGradient,
+                    onChanged: (v) => setState(() => _temperature = v),
+                  ),
+                  const SizedBox(height: 48),
+                  _buildSliderRow(
+                    title: 'Nucleus Sampling (Top-P)',
+                    desc: 'Limits word choice to the most probable cumulative percentage.',
+                    value: _topP,
+                    color: AppColors.tertiary,
+                    gradient: [AppColors.secondary, AppColors.tertiary],
+                    onChanged: (v) => setState(() => _topP = v),
+                  ),
+                  const SizedBox(height: 48),
+                  _buildModelSelector(colorScheme),
+                ],
+              ),
             ),
           ),
         ),
@@ -225,19 +237,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildSectionTitle(LucideIcons.shieldCheck, '개인정보 및 보안', AppColors.error),
+        _buildSectionTitle(LucideIcons.userCheck, 'Privacy & Safety', AppColors.error),
         const SizedBox(height: 24),
         _buildSelectionItem(
-          title: '학습 데이터 활용 거부',
-          desc: '귀하의 대화 내용이 모델 개선 학습에 사용되는 것을 방지합니다.',
+          title: 'Training Data Opt-out',
+          desc: 'Prevent your conversations from being used to improve our models.',
           value: _isTrainingOptOut,
           onChanged: (v) => setState(() => _isTrainingOptOut = v),
           colorScheme: colorScheme,
         ),
         const SizedBox(height: 12),
         _buildSelectionItem(
-          title: '강화된 암호화',
-          desc: '모든 대화 히스토리에 대해 종단간 암호화를 적용합니다.',
+          title: 'Enhanced Encryption',
+          desc: 'End-to-end encryption for all persistent chat history.',
           value: _isEncryptionEnabled,
           onChanged: (v) => setState(() => _isEncryptionEnabled = v),
           colorScheme: colorScheme,
@@ -251,32 +263,40 @@ class _SettingsScreenState extends State<SettingsScreen> {
       children: [
         Icon(icon, color: color, size: 28),
         const SizedBox(width: 16),
-        Text(title, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 24, letterSpacing: -0.5)),
+        Text(
+          title,
+          style: GoogleFonts.plusJakartaSans(
+            fontWeight: FontWeight.w700,
+            fontSize: 24,
+            letterSpacing: -0.5,
+            color: AppColors.onSurface,
+          ),
+        ),
       ],
     );
   }
 
   Widget _buildPreferenceCard({required ColorScheme colorScheme, required String label, required Widget child}) {
     return Container(
-      padding: const EdgeInsets.all(28),
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
       decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHigh,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppColors.outlineVariant),
+        color: AppColors.surfaceLow,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.outlineVariant.withValues(alpha: 0.1)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             label, 
-            style: TextStyle(
+            style: GoogleFonts.inter(
               fontSize: 10, 
-              fontWeight: FontWeight.w900, 
+              fontWeight: FontWeight.w800, 
               letterSpacing: 2.0, 
               color: AppColors.onSurfaceVariant.withValues(alpha: 0.6),
             ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 16),
           child,
         ],
       ),
@@ -286,7 +306,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget _buildThemeTab(IconData icon, String label, bool isActive) {
     return Expanded(
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12),
+        padding: const EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(
           color: isActive ? AppColors.surfaceHighest : Colors.transparent,
           borderRadius: BorderRadius.circular(100),
@@ -294,9 +314,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 16, color: isActive ? AppColors.onSurface : AppColors.onSurfaceVariant),
+            Icon(
+              icon,
+              size: 16,
+              color: isActive ? AppColors.onSurface : AppColors.onSurfaceVariant,
+            ),
             const SizedBox(width: 8),
-            Text(label, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: isActive ? AppColors.onSurface : AppColors.onSurfaceVariant)),
+            Text(
+              label,
+              style: GoogleFonts.inter(
+                fontWeight: FontWeight.w600,
+                fontSize: 13,
+                color: isActive ? AppColors.onSurface : AppColors.onSurfaceVariant,
+              ),
+            ),
           ],
         ),
       ),
@@ -306,13 +337,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget _buildColorDot(Color color, bool isActive) {
     return Container(
       margin: const EdgeInsets.only(right: 12),
-      width: 32,
-      height: 32,
+      width: 24,
+      height: 24,
+      padding: const EdgeInsets.all(2),
       decoration: BoxDecoration(
-        color: color,
         shape: BoxShape.circle,
-        border: isActive ? Border.all(color: Colors.white, width: 2) : null,
-        boxShadow: isActive ? [BoxShadow(color: color.withValues(alpha: 0.4), blurRadius: 10)] : null,
+        border: isActive ? Border.all(color: AppColors.surfaceHighest, width: 2) : null,
+      ),
+      child: Container(
+        decoration: BoxDecoration(
+          color: color,
+          shape: BoxShape.circle,
+          boxShadow: isActive ? [BoxShadow(color: color.withValues(alpha: 0.4), blurRadius: 8)] : null,
+        ),
       ),
     );
   }
@@ -322,6 +359,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     required String desc,
     required double value,
     required Color color,
+    required List<Color> gradient,
     required ValueChanged<double> onChanged,
   }) {
     return Column(
@@ -334,37 +372,69 @@ class _SettingsScreenState extends State<SettingsScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                  Text(title, style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600, fontSize: 18, color: AppColors.onSurface)),
                   const SizedBox(height: 4),
-                  Text(desc, style: TextStyle(color: AppColors.onSurfaceVariant, fontSize: 14)),
+                  Text(desc, style: GoogleFonts.inter(color: AppColors.onSurfaceVariant, fontSize: 14)),
                 ],
               ),
             ),
-            Text(value.toStringAsFixed(2), style: TextStyle(color: color, fontWeight: FontWeight.w900, fontSize: 24, fontFeatures: const [FontFeature.tabularFigures()])),
+            Text(
+              value.toStringAsFixed(2),
+              style: GoogleFonts.inter(
+                color: color,
+                fontWeight: FontWeight.w700,
+                fontSize: 22,
+                fontFeatures: const [FontFeature.tabularFigures()],
+              ),
+            ),
           ],
         ),
         const SizedBox(height: 24),
-        SliderTheme(
-          data: SliderThemeData(
-            activeTrackColor: color,
-            inactiveTrackColor: AppColors.background,
-            thumbColor: Colors.white,
-            overlayColor: color.withValues(alpha: 0.1),
-            trackHeight: 4,
-            thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 10, elevation: 5),
-          ),
-          child: Slider(
-            value: value,
-            onChanged: onChanged,
-          ),
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        Stack(
           children: [
-            Text('논리적 / 정밀함', style: TextStyle(fontSize: 9, fontWeight: FontWeight.w900, letterSpacing: 1.0, color: AppColors.onSurfaceVariant.withValues(alpha: 0.5))),
-            Text('창의적 / 추상적', style: TextStyle(fontSize: 9, fontWeight: FontWeight.w900, letterSpacing: 1.0, color: AppColors.onSurfaceVariant.withValues(alpha: 0.5))),
+            Container(
+              height: 4,
+              decoration: BoxDecoration(
+                color: AppColors.background,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            LayoutBuilder(
+              builder: (context, constraints) {
+                return Container(
+                  height: 4,
+                  width: constraints.maxWidth * value,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(colors: gradient),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                );
+              },
+            ),
+            SliderTheme(
+              data: SliderThemeData(
+                activeTrackColor: Colors.transparent,
+                inactiveTrackColor: Colors.transparent,
+                thumbColor: Colors.white,
+                overlayColor: color.withValues(alpha: 0.1),
+                trackHeight: 4,
+                thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 10, elevation: 5),
+              ),
+              child: Slider(
+                value: value,
+                onChanged: onChanged,
+              ),
+            ),
           ],
         ),
+        if (title == 'Creativity Temperature')
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('Logical / Precise', style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w600, color: AppColors.onSurfaceVariant.withValues(alpha: 0.5))),
+              Text('Creative / Abstract', style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w600, color: AppColors.onSurfaceVariant.withValues(alpha: 0.5))),
+            ],
+          ),
       ],
     );
   }
@@ -384,19 +454,36 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget _buildModelCard(String name, String desc, bool isActive) {
     return Expanded(
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: isActive ? AppColors.surfaceHighest.withValues(alpha: 0.5) : AppColors.surfaceLow,
+          color: isActive ? AppColors.surfaceHigh : AppColors.surfaceLow.withValues(alpha: 0.6),
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: isActive ? AppColors.primary.withValues(alpha: 0.4) : AppColors.outlineVariant),
+          border: Border.all(
+            color: isActive ? AppColors.primary.withValues(alpha: 0.4) : AppColors.outlineVariant.withValues(alpha: 0.1),
+            width: isActive ? 1.5 : 1.0,
+          ),
           boxShadow: isActive ? [BoxShadow(color: AppColors.primary.withValues(alpha: 0.1), blurRadius: 20)] : null,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(name, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 13, color: isActive ? AppColors.primary : AppColors.onSurface)),
+            Text(
+              name,
+              style: GoogleFonts.plusJakartaSans(
+                fontWeight: FontWeight.w800,
+                fontSize: 14,
+                color: isActive ? AppColors.onSurface : AppColors.onSurface.withValues(alpha: 0.8),
+              ),
+            ),
             const SizedBox(height: 4),
-            Text(desc, style: TextStyle(fontSize: 10, color: AppColors.onSurfaceVariant)),
+            Text(
+              desc,
+              style: GoogleFonts.inter(
+                fontSize: 11,
+                color: AppColors.onSurfaceVariant.withValues(alpha: 0.8),
+                height: 1.2,
+              ),
+            ),
           ],
         ),
       ),
@@ -411,10 +498,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
     required ColorScheme colorScheme,
   }) {
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
       decoration: BoxDecoration(
         color: AppColors.surfaceLow,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
         children: [
@@ -422,17 +509,43 @@ class _SettingsScreenState extends State<SettingsScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                Text(
+                  title,
+                  style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 16, color: AppColors.onSurface),
+                ),
                 const SizedBox(height: 4),
-                Text(desc, style: TextStyle(color: AppColors.onSurfaceVariant, fontSize: 13)),
+                Text(
+                  desc,
+                  style: GoogleFonts.inter(color: AppColors.onSurfaceVariant, fontSize: 12),
+                ),
               ],
             ),
           ),
-          Switch.adaptive(
-            value: value, 
-            onChanged: onChanged,
-            activeTrackColor: AppColors.secondary.withValues(alpha: 0.5),
-            activeThumbColor: AppColors.secondary,
+          GestureDetector(
+            onTap: () => onChanged(!value),
+            child: Container(
+              width: 48,
+              height: 24,
+              padding: const EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                color: AppColors.surfaceHighest,
+                borderRadius: BorderRadius.circular(100),
+              ),
+              child: AnimatedAlign(
+                duration: const Duration(milliseconds: 200),
+                curve: Curves.easeInOut,
+                alignment: value ? Alignment.centerRight : Alignment.centerLeft,
+                child: Container(
+                  width: 16,
+                  height: 16,
+                  decoration: BoxDecoration(
+                    color: value ? AppColors.secondary : AppColors.outline,
+                    shape: BoxShape.circle,
+                    boxShadow: value ? [BoxShadow(color: AppColors.secondary.withValues(alpha: 0.4), blurRadius: 8)] : null,
+                  ),
+                ),
+              ),
+            ),
           ),
         ],
       ),

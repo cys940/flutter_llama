@@ -6,6 +6,7 @@ import 'package:file_picker/file_picker.dart';
 import '../../../../core/widgets/chat_bubble.dart';
 import '../../../../core/widgets/app_text_field.dart';
 import '../../../../core/widgets/app_button.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_design_system.dart';
 import '../../../../core/utils/responsive_helper.dart';
 import '../../../../core/widgets/design_decorators.dart';
@@ -13,9 +14,9 @@ import '../providers/chat_provider.dart';
 import '../providers/chat_state.dart';
 import '../providers/meeting_provider.dart';
 import '../providers/meeting_state.dart';
-import '../widgets/chat_history_sidebar.dart';
 import '../../../../core/router/route_names.dart';
 import 'package:go_router/go_router.dart';
+import '../widgets/chat_utility_sidebar.dart';
 
 class ChatScreen extends ConsumerStatefulWidget {
   const ChatScreen({super.key});
@@ -27,7 +28,6 @@ class ChatScreen extends ConsumerStatefulWidget {
 class _ChatScreenState extends ConsumerState<ChatScreen> {
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void dispose() {
@@ -67,8 +67,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
     ref.listen<MeetingState>(meetingProvider, (previous, next) {
       if (next.error != null && next.error != previous?.error) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -80,24 +78,18 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       }
     });
 
-    return Scaffold(
-      key: _scaffoldKey,
-      backgroundColor: colorScheme.surface,
-      drawer: context.isMobile ? const ChatHistorySidebar() : null,
-      body: Row(
-        children: [
-          if (!context.isMobile) const ChatHistorySidebar(),
-          Expanded(
-            child: _ChatBody(
-              messageController: _messageController,
-              scrollController: _scrollController,
-              onPickModel: _pickModel,
-              scaffoldKey: _scaffoldKey,
-              scrollToBottom: _scrollToBottom,
-            ),
+    return Row(
+      children: [
+        Expanded(
+          child: _ChatBody(
+            messageController: _messageController,
+            scrollController: _scrollController,
+            onPickModel: _pickModel,
+            scrollToBottom: _scrollToBottom,
           ),
-        ],
-      ),
+        ),
+        if (context.isDesktop) const ChatUtilitySidebar(),
+      ],
     );
   }
 }
@@ -107,14 +99,12 @@ class _ChatBody extends ConsumerWidget {
     required this.messageController,
     required this.scrollController,
     required this.onPickModel,
-    required this.scaffoldKey,
     required this.scrollToBottom,
   });
 
   final TextEditingController messageController;
   final ScrollController scrollController;
   final VoidCallback onPickModel;
-  final GlobalKey<ScaffoldState> scaffoldKey;
   final VoidCallback scrollToBottom;
 
   @override
@@ -130,7 +120,15 @@ class _ChatBody extends ConsumerWidget {
           reverse: true,
           physics: const BouncingScrollPhysics(),
           slivers: [
-            const SliverToBoxAdapter(child: SizedBox(height: 120)),
+            const SliverToBoxAdapter(child: SizedBox(height: 140)),
+
+            if (state.isLoading && state.isModelLoaded)
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                  child: _buildThinkingState(context, design),
+                ),
+              ),
 
             if (state.isModelLoaded && messages.isNotEmpty)
               SliverPadding(
@@ -168,7 +166,6 @@ class _ChatBody extends ConsumerWidget {
               pinned: true,
               delegate: _EditorialHeaderDelegate(
                 isMobile: context.isMobile,
-                scaffoldKey: scaffoldKey,
                 modelName: state.modelPath?.split('/').last,
                 isModelLoaded: state.isModelLoaded,
                 onClearChat: () => ref.read(chatProvider.notifier).clearChat(),
@@ -247,19 +244,92 @@ class _ChatBody extends ConsumerWidget {
     return const SizedBox.shrink();
   }
 
+  Widget _buildThinkingState(BuildContext context, AppDesignSystem design) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            color: AppColors.surfaceHigh,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: const Center(child: Icon(LucideIcons.bot, size: 20, color: AppColors.primary)),
+        ),
+        const SizedBox(width: 16),
+        Flexible(
+          child: GlassDecorator(
+            borderRadius: design.aiBubbleRadius.copyWith(topLeft: Radius.zero),
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Llama is contemplating...',
+                    style: TextStyle(
+                      color: AppColors.onSurface.withValues(alpha: 0.6),
+                      fontSize: 13,
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: List.generate(3, (index) => 
+                      Container(
+                        width: 6,
+                        height: 6,
+                        margin: const EdgeInsets.only(right: 6),
+                        decoration: const BoxDecoration(color: AppColors.primary, shape: BoxShape.circle),
+                      ).animate(onPlay: (c) => c.repeat())
+                       .scale(duration: 400.ms, delay: (index * 200).ms, begin: const Offset(1, 1), end: const Offset(1.5, 1.5))
+                       .then()
+                       .scale(duration: 400.ms, begin: const Offset(1.5, 1.5), end: const Offset(1, 1))
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
+    ).animate().fadeIn();
+  }
+
   Widget _buildEmptyState(BuildContext context, ChatState state) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const SignatureGradient(
-            child: Icon(LucideIcons.sparkles, size: 64, color: Colors.white),
+          Container(
+            width: 80,
+            height: 80,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: LinearGradient(colors: context.design.primaryGradient),
+            ),
+            child: const Icon(LucideIcons.droplets, size: 40, color: Colors.white),
           ).animate().scale(duration: 600.ms, curve: Curves.elasticOut),
-          const SizedBox(height: 24),
+          const SizedBox(height: 32),
           Text(
-            'The Curator is ready',
-            style: Theme.of(context).textTheme.headlineSmall,
+            'Llama Intelligence',
+            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+              fontWeight: FontWeight.w900,
+              fontFamily: 'Plus Jakarta Sans',
+            ),
           ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.2, end: 0),
+          const SizedBox(height: 8),
+          Text(
+            'Sophisticated Curator',
+            style: TextStyle(
+              color: AppColors.onSurfaceVariant.withValues(alpha: 0.5),
+              fontSize: 12,
+              letterSpacing: 2,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ],
       ),
     );
@@ -305,14 +375,14 @@ class _ChatBody extends ConsumerWidget {
       right: 0,
       child: Center(
         child: Container(
-          constraints: const BoxConstraints(maxWidth: 720),
-          padding: const EdgeInsets.symmetric(horizontal: 20),
+          constraints: const BoxConstraints(maxWidth: 800),
+          padding: const EdgeInsets.symmetric(horizontal: 24),
           child: GlassDecorator(
-            blur: design.glassBlur,
-            opacity: design.glassOpacity,
+            blur: 24,
+            opacity: 0.6,
             borderRadius: BorderRadius.circular(100),
             child: Padding(
-              padding: const EdgeInsets.all(8),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               child: Row(
                 children: [
                   const SizedBox(width: 8),
@@ -387,7 +457,6 @@ class _ChatBody extends ConsumerWidget {
 class _EditorialHeaderDelegate extends SliverPersistentHeaderDelegate {
   _EditorialHeaderDelegate({
     required this.isMobile,
-    required this.scaffoldKey,
     this.modelName,
     required this.isModelLoaded,
     required this.onClearChat,
@@ -395,7 +464,6 @@ class _EditorialHeaderDelegate extends SliverPersistentHeaderDelegate {
   });
 
   final bool isMobile;
-  final GlobalKey<ScaffoldState> scaffoldKey;
   final String? modelName;
   final bool isModelLoaded;
   final VoidCallback onClearChat;
@@ -428,7 +496,7 @@ class _EditorialHeaderDelegate extends SliverPersistentHeaderDelegate {
             if (isMobile)
               IconButton(
                 icon: const Icon(LucideIcons.menu),
-                onPressed: () => scaffoldKey.currentState?.openDrawer(),
+                onPressed: () => Scaffold.of(context).openDrawer(),
               ),
             Expanded(
               child: Column(
@@ -460,8 +528,20 @@ class _EditorialHeaderDelegate extends SliverPersistentHeaderDelegate {
               IconButton(
                 icon: const Icon(LucideIcons.trash2, size: 20),
                 onPressed: onClearChat,
-                color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
+                color: AppColors.onSurfaceVariant.withValues(alpha: 0.4),
               ),
+            const SizedBox(width: 8),
+            Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: LinearGradient(colors: design.primaryGradient),
+              ),
+              child: const Center(
+                child: Text('JD', style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w900)),
+              ),
+            ),
           ],
         ),
       ),

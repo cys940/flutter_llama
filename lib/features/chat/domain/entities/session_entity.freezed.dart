@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$SessionEntity {
 
-@JsonKey(name: 'id') String get sessionId; String get title; DateTime get createdAt; DateTime get lastMessageAt;@JsonKey(includeToJson: false) List<MessageEntity> get messages; bool get isMeeting; MeetingMetadata? get meetingMetadata;
+@JsonKey(name: 'id') String get sessionId; String get title; DateTime get createdAt; DateTime get lastMessageAt;@JsonKey(includeToJson: false) List<MessageEntity> get messages;@BoolIntConverter() bool get isMeeting;@MeetingMetadataConverter() MeetingMetadata? get meetingMetadata;
 /// Create a copy of SessionEntity
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $SessionEntityCopyWith<$Res>  {
   factory $SessionEntityCopyWith(SessionEntity value, $Res Function(SessionEntity) _then) = _$SessionEntityCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(name: 'id') String sessionId, String title, DateTime createdAt, DateTime lastMessageAt,@JsonKey(includeToJson: false) List<MessageEntity> messages, bool isMeeting, MeetingMetadata? meetingMetadata
+@JsonKey(name: 'id') String sessionId, String title, DateTime createdAt, DateTime lastMessageAt,@JsonKey(includeToJson: false) List<MessageEntity> messages,@BoolIntConverter() bool isMeeting,@MeetingMetadataConverter() MeetingMetadata? meetingMetadata
 });
 
 
@@ -171,7 +171,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'id')  String sessionId,  String title,  DateTime createdAt,  DateTime lastMessageAt, @JsonKey(includeToJson: false)  List<MessageEntity> messages,  bool isMeeting,  MeetingMetadata? meetingMetadata)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'id')  String sessionId,  String title,  DateTime createdAt,  DateTime lastMessageAt, @JsonKey(includeToJson: false)  List<MessageEntity> messages, @BoolIntConverter()  bool isMeeting, @MeetingMetadataConverter()  MeetingMetadata? meetingMetadata)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SessionEntity() when $default != null:
 return $default(_that.sessionId,_that.title,_that.createdAt,_that.lastMessageAt,_that.messages,_that.isMeeting,_that.meetingMetadata);case _:
@@ -192,7 +192,7 @@ return $default(_that.sessionId,_that.title,_that.createdAt,_that.lastMessageAt,
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'id')  String sessionId,  String title,  DateTime createdAt,  DateTime lastMessageAt, @JsonKey(includeToJson: false)  List<MessageEntity> messages,  bool isMeeting,  MeetingMetadata? meetingMetadata)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'id')  String sessionId,  String title,  DateTime createdAt,  DateTime lastMessageAt, @JsonKey(includeToJson: false)  List<MessageEntity> messages, @BoolIntConverter()  bool isMeeting, @MeetingMetadataConverter()  MeetingMetadata? meetingMetadata)  $default,) {final _that = this;
 switch (_that) {
 case _SessionEntity():
 return $default(_that.sessionId,_that.title,_that.createdAt,_that.lastMessageAt,_that.messages,_that.isMeeting,_that.meetingMetadata);case _:
@@ -212,7 +212,7 @@ return $default(_that.sessionId,_that.title,_that.createdAt,_that.lastMessageAt,
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'id')  String sessionId,  String title,  DateTime createdAt,  DateTime lastMessageAt, @JsonKey(includeToJson: false)  List<MessageEntity> messages,  bool isMeeting,  MeetingMetadata? meetingMetadata)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'id')  String sessionId,  String title,  DateTime createdAt,  DateTime lastMessageAt, @JsonKey(includeToJson: false)  List<MessageEntity> messages, @BoolIntConverter()  bool isMeeting, @MeetingMetadataConverter()  MeetingMetadata? meetingMetadata)?  $default,) {final _that = this;
 switch (_that) {
 case _SessionEntity() when $default != null:
 return $default(_that.sessionId,_that.title,_that.createdAt,_that.lastMessageAt,_that.messages,_that.isMeeting,_that.meetingMetadata);case _:
@@ -227,7 +227,7 @@ return $default(_that.sessionId,_that.title,_that.createdAt,_that.lastMessageAt,
 @JsonSerializable()
 
 class _SessionEntity implements SessionEntity {
-  const _SessionEntity({@JsonKey(name: 'id') required this.sessionId, required this.title, required this.createdAt, required this.lastMessageAt, @JsonKey(includeToJson: false) final  List<MessageEntity> messages = const [], this.isMeeting = false, this.meetingMetadata}): _messages = messages;
+  const _SessionEntity({@JsonKey(name: 'id') required this.sessionId, required this.title, required this.createdAt, required this.lastMessageAt, @JsonKey(includeToJson: false) final  List<MessageEntity> messages = const [], @BoolIntConverter() this.isMeeting = false, @MeetingMetadataConverter() this.meetingMetadata}): _messages = messages;
   factory _SessionEntity.fromJson(Map<String, dynamic> json) => _$SessionEntityFromJson(json);
 
 @override@JsonKey(name: 'id') final  String sessionId;
@@ -241,8 +241,8 @@ class _SessionEntity implements SessionEntity {
   return EqualUnmodifiableListView(_messages);
 }
 
-@override@JsonKey() final  bool isMeeting;
-@override final  MeetingMetadata? meetingMetadata;
+@override@JsonKey()@BoolIntConverter() final  bool isMeeting;
+@override@MeetingMetadataConverter() final  MeetingMetadata? meetingMetadata;
 
 /// Create a copy of SessionEntity
 /// with the given fields replaced by the non-null parameter values.
@@ -277,7 +277,7 @@ abstract mixin class _$SessionEntityCopyWith<$Res> implements $SessionEntityCopy
   factory _$SessionEntityCopyWith(_SessionEntity value, $Res Function(_SessionEntity) _then) = __$SessionEntityCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(name: 'id') String sessionId, String title, DateTime createdAt, DateTime lastMessageAt,@JsonKey(includeToJson: false) List<MessageEntity> messages, bool isMeeting, MeetingMetadata? meetingMetadata
+@JsonKey(name: 'id') String sessionId, String title, DateTime createdAt, DateTime lastMessageAt,@JsonKey(includeToJson: false) List<MessageEntity> messages,@BoolIntConverter() bool isMeeting,@MeetingMetadataConverter() MeetingMetadata? meetingMetadata
 });
 
 
