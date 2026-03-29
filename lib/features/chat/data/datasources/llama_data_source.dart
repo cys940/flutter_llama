@@ -55,6 +55,8 @@ class LlamaDataSource {
         params: GenerationParams(
           temp: temperature ?? 0.8,
           maxTokens: maxTokens ?? 2048,
+          topP: 0.9,
+          topK: 40,
         ),
       );
 

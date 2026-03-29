@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:file_picker/file_picker.dart';
 import '../../../../core/widgets/chat_bubble.dart';
 import '../../../../core/widgets/app_text_field.dart';
 import '../../../../core/widgets/app_button.dart';
@@ -18,6 +17,7 @@ import '../providers/meeting_state.dart';
 import '../../../../core/router/route_names.dart';
 import 'package:go_router/go_router.dart';
 import '../widgets/chat_utility_sidebar.dart';
+import '../widgets/model_selector_sheet.dart';
 
 class ChatScreen extends ConsumerStatefulWidget {
   const ChatScreen({super.key});
@@ -47,28 +47,28 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     }
   }
 
-  Future<void> _pickModel() async {
-    final result = await FilePicker.platform.pickFiles(
-      type: FileType.any,
+  void _showModelSelector() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => const ModelSelectorSheet(),
     );
-
-    if (result != null && result.files.single.path != null) {
-      final path = result.files.single.path!;
-      try {
-        // 모바일/데스크톱 공통으로 기본 모델로 등록(복사)하고 로드하도록 변경
-        await ref.read(chatProvider.notifier).registerDefaultModel(path);
-      } catch (e) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('모델 설정 실패: $e')),
-          );
-        }
-      }
-    }
   }
 
   @override
   Widget build(BuildContext context) {
+    ref.listen<ChatState>(chatProvider, (previous, next) {
+      if (next.error != null && next.error != previous?.error) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(next.error!),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
+    });
+
     ref.listen<MeetingState>(meetingProvider, (previous, next) {
       if (next.error != null && next.error != previous?.error) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -86,7 +86,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           child: _ChatBody(
             messageController: _messageController,
             scrollController: _scrollController,
-            onPickModel: _pickModel,
+            onPickModel: _showModelSelector,
+            onSelectModel: _showModelSelector,
             scrollToBottom: _scrollToBottom,
           ),
         ),
@@ -101,12 +102,14 @@ class _ChatBody extends ConsumerWidget {
     required this.messageController,
     required this.scrollController,
     required this.onPickModel,
+    required this.onSelectModel,
     required this.scrollToBottom,
   });
 
   final TextEditingController messageController;
   final ScrollController scrollController;
   final VoidCallback onPickModel;
+  final VoidCallback onSelectModel;
   final VoidCallback scrollToBottom;
 
   @override
@@ -171,6 +174,7 @@ class _ChatBody extends ConsumerWidget {
                 modelName: state.modelPath?.split('/').last,
                 isModelLoaded: state.isModelLoaded,
                 onClearChat: () => ref.read(chatProvider.notifier).clearChat(),
+                onSelectModel: onSelectModel,
                 design: design,
               ),
             ),
@@ -305,8 +309,8 @@ class _ChatBody extends ConsumerWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const AppLogo(size: 80),
-          const SizedBox(height: 32),
+          const AppLogo(size: 72, animate: true),
+          const SizedBox(height: 24),
           Text(
             'Llama Intelligence',
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
@@ -336,8 +340,8 @@ class _ChatBody extends ConsumerWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const AppLogo(size: 100),
-          const SizedBox(height: 32),
+          const AppLogo(size: 80, animate: true),
+          const SizedBox(height: 24),
           Text(
             'Llama Intelligence',
             style: textTheme.displayLarge?.copyWith(
@@ -348,13 +352,24 @@ class _ChatBody extends ConsumerWidget {
           const SizedBox(height: 48),
           if (!state.isLoading)
             AppButton(
-              text: context.isMobile ? '기본 모델 설정' : 'Connect Model',
+              text: '모델 선택 및 관리',
               onPressed: onPickModel,
               useGlow: true,
-              width: 220,
-              icon: const Icon(LucideIcons.plus, size: 18),
+              width: 240,
+              icon: const Icon(LucideIcons.settings, size: 18),
             ).animate().fadeIn(delay: 500.ms).scale(),
-          if (state.isLoading) const CircularProgressIndicator(strokeWidth: 2),
+          if (state.isLoading) 
+            const CircularProgressIndicator(strokeWidth: 2).animate().fadeIn(),
+          
+          if (state.modelError != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 24),
+              child: Text(
+                state.modelError!,
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: AppColors.error, fontSize: 13),
+              ),
+            ).animate().shake(),
         ],
       ),
     );
@@ -452,6 +467,7 @@ class _EditorialHeaderDelegate extends SliverPersistentHeaderDelegate {
     this.modelName,
     required this.isModelLoaded,
     required this.onClearChat,
+    required this.onSelectModel,
     required this.design,
   });
 
@@ -459,6 +475,7 @@ class _EditorialHeaderDelegate extends SliverPersistentHeaderDelegate {
   final String? modelName;
   final bool isModelLoaded;
   final VoidCallback onClearChat;
+  final VoidCallback onSelectModel;
   final AppDesignSystem design;
 
   @override
@@ -516,12 +533,20 @@ class _EditorialHeaderDelegate extends SliverPersistentHeaderDelegate {
                 ],
               ),
             ),
-            if (isModelLoaded)
+            if (isModelLoaded) ...[
+              IconButton(
+                icon: const Icon(LucideIcons.settings, size: 20),
+                onPressed: onSelectModel,
+                color: AppColors.onSurfaceVariant.withValues(alpha: 0.4),
+                tooltip: '모델 변경',
+              ),
               IconButton(
                 icon: const Icon(LucideIcons.trash2, size: 20),
                 onPressed: onClearChat,
                 color: AppColors.onSurfaceVariant.withValues(alpha: 0.4),
+                tooltip: '대화 초기화',
               ),
+            ],
             const SizedBox(width: 8),
             const AppLogo(size: 36, animate: false),
           ],

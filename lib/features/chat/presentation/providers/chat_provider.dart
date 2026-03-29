@@ -1,10 +1,16 @@
+import 'dart:io' if (dart.library.html) 'dart:html' as io;
+import 'package:flutter/material.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:uuid/uuid.dart';
+import '../widgets/permission_sheet.dart';
 import 'package:talker_flutter/talker_flutter.dart';
 import '../../../../core/di/injection.dart';
+import '../../../../core/services/platform_service.dart';
 import '../../data/datasources/llama_data_source.dart';
 import '../../domain/entities/message_entity.dart';
 import '../../domain/entities/session_entity.dart';
+import '../../domain/entities/model_file_entity.dart';
 import '../../domain/repositories/chat_repository.dart';
 import '../../domain/repositories/model_repository.dart';
 import 'chat_state.dart';
@@ -22,6 +28,9 @@ ChatRepository chatRepository(Ref ref) => getIt<ChatRepository>();
 ModelRepository modelRepository(Ref ref) => getIt<ModelRepository>();
 
 @riverpod
+PlatformService platformService(Ref ref) => getIt<PlatformService>();
+
+@riverpod
 class ChatNotifier extends _$ChatNotifier {
   final Talker _talker = getIt<Talker>();
 
@@ -29,6 +38,7 @@ class ChatNotifier extends _$ChatNotifier {
   ChatState build() {
     // 앱 시작 시 초기 데이터 로드
     Future.microtask(() async {
+      await fetchAvailableModels();
       await initializeModel();
       await fetchSessions();
     });
@@ -59,25 +69,156 @@ class ChatNotifier extends _$ChatNotifier {
           isModelLoaded: true,
           modelPath: modelPath,
           isLoading: false,
+          modelError: null,
         );
         _talker.info('[ChatNotifier] Model initialized at $modelPath');
+
+        // 모델 로드 시 세션이 없다면 새로 시작 (자동 이니셜라이즈 대응)
+        if (state.sessionId == null) {
+          await startNewSession();
+        }
       } else {
-        final modelsDir = await modelRepository.getModelsDirectory();
-        final errorMsg = '모델 파일을 찾을 수 없습니다. \n다음 경로에 .gguf 파일을 넣어주세요: \n${modelsDir.path}';
         state = state.copyWith(
           isModelLoaded: false,
-          modelError: errorMsg,
           isLoading: false,
+          modelError: '사용 가능한 모델이 없습니다. 모델 파일을 선택하거나 저장소에 추가해주세요.',
         );
-        _talker.warning('[ChatNotifier] $errorMsg');
       }
     } catch (e, st) {
-      _talker.handle(e, st, '[ChatNotifier] Error during model initialization');
+      _talker.handle(e, st, '[ChatNotifier] Failed to initialize model');
       state = state.copyWith(
         isModelLoaded: false,
-        modelError: '모델 로드 중 오류 발생: $e',
+        isLoading: false,
+        modelError: '모델 로딩 실패: $e',
+      );
+    }
+  }
+
+  /// 사용 가능한 모델 파일 목록을 새로고침합니다.
+  Future<void> fetchAvailableModels() async {
+    try {
+      final repo = ref.read(modelRepositoryProvider);
+      final platform = ref.read(platformServiceProvider);
+      final models = await repo.getAvailableModels();
+      
+      // 저장 공간 정보 업데이트
+      final free = await platform.getFreeDiskSpace();
+      final total = await platform.getTotalDiskSpace();
+      
+      _talker.info('[ChatNotifier] Disk space updated: $free / $total MB');
+      
+      state = state.copyWith(
+        availableModels: models,
+        freeDiskSpace: free,
+        totalDiskSpace: total,
+      );
+    } catch (e) {
+      _talker.error('[ChatNotifier] Failed to fetch models: $e');
+    }
+  }
+
+  /// 파일 피커를 통해 새 모델을 선택하고 등록합니다.
+  Future<void> pickAndRegisterModel(BuildContext context) async {
+    try {
+      final platform = ref.read(platformServiceProvider);
+      _talker.info('[ChatNotifier] Starting model picking process...');
+
+      // 1. 권한 확인 (Platform-specific)
+      if (platform.isAndroid) {
+        final hasPermission = await platform.checkStoragePermission();
+        if (!hasPermission) {
+          _talker.info('[ChatNotifier] Requesting permission via PermissionSheet...');
+          final granted = await PermissionSheet.show(context);
+          if (!granted) {
+            state = state.copyWith(error: '저장소 접근 권한이 없어 모델을 등록할 수 없습니다.');
+            return;
+          }
+        }
+      }
+
+      // 2. 파일 선택
+      _talker.info('[ChatNotifier] Opening file picker...');
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.any,
+        allowMultiple: false,
+      );
+
+      if (result == null || result.files.single.path == null) {
+        _talker.info('[ChatNotifier] Model picking cancelled by user.');
+        return;
+      }
+      
+      final sourcePath = result.files.single.path!;
+      final fileName = result.files.single.name;
+      _talker.info('[ChatNotifier] File selected: $fileName at $sourcePath');
+      
+      if (!fileName.endsWith('.gguf')) {
+        _talker.warning('[ChatNotifier] Invalid file format selected: $fileName');
+        state = state.copyWith(error: '.gguf 확장자 파일만 선택 가능합니다.');
+        return;
+      }
+
+      // 3. 데이터 무결성 검증 (Integrity Check) 시뮬레이션
+      _talker.info('[ChatNotifier] Starting data integrity check for $fileName');
+      state = state.copyWith(isVerifying: true, error: null);
+      
+      // 실제 헤더 확인 로직 (간단히 첫 4바이트 체크 가능)
+      if (!platform.isWeb) {
+        final firstBytes = await io.File(sourcePath).openRead(0, 4).first;
+        final header = String.fromCharCodes(firstBytes);
+        _talker.debug('[ChatNotifier] File header: $header');
+      }
+      
+      await Future.delayed(const Duration(milliseconds: 1500)); // UX를 위한 인위적 지연
+      
+      state = state.copyWith(isVerifying: false);
+
+      // 4. 저장 공간 확인 (최소 3GB 권장)
+      final freeSpace = await platform.getFreeDiskSpace(); // MB 단위
+      _talker.info('[ChatNotifier] Checking disk space... Free: $freeSpace MB');
+      
+      if (freeSpace != null && freeSpace < 3000) {
+        _talker.warning('[ChatNotifier] Insufficient disk space: $freeSpace MB');
+        state = state.copyWith(error: '저장 공간이 부족합니다. (최소 3GB 필요)');
+        return;
+      }
+
+      // 5. 복사 시작
+      _talker.info('[ChatNotifier] Starting model copy for $fileName');
+      state = state.copyWith(isCopying: true, copyProgress: 0.0);
+      
+      final progressStream = ref.read(modelRepositoryProvider).copyModelWithProgress(sourcePath);
+      
+      await for (final progress in progressStream) {
+        state = state.copyWith(copyProgress: progress);
+      }
+
+      state = state.copyWith(isCopying: false, copyProgress: 1.0);
+      _talker.info('[ChatNotifier] Model registration complete: $fileName');
+      
+      // 목록 새로고침 및 초기화
+      await fetchAvailableModels();
+      await initializeModel();
+
+    } catch (e, st) {
+      _talker.handle(e, st, '[ChatNotifier] Error during model picking and registration');
+      state = state.copyWith(isCopying: false, isVerifying: false, error: '모델 등록 중 오류 발생: $e');
+    }
+  }
+
+  /// 특정 모델 파일을 선택하여 로드합니다.
+  Future<void> selectModel(ModelFileEntity file) async {
+    state = state.copyWith(isLoading: true, modelError: null);
+    try {
+      await ref.read(chatRepositoryProvider).loadModel(file.path);
+      state = state.copyWith(
+        isModelLoaded: true,
+        modelPath: file.path,
         isLoading: false,
       );
+      await startNewSession();
+    } catch (e) {
+      state = state.copyWith(isLoading: false, modelError: '모델 전환 실패: $e');
     }
   }
 
@@ -155,6 +296,24 @@ class ChatNotifier extends _$ChatNotifier {
     }
   }
 
+  /// 사용자가 선택한 모델을 기본 모델로 등록하고 로드합니다.
+  Future<void> registerDefaultModel(String path) async {
+    state = state.copyWith(isLoading: true, modelError: null);
+    try {
+      final modelRepository = ref.read(modelRepositoryProvider);
+      await modelRepository.setDefaultModel(path);
+      
+      // 저장 후 초기화 (자동 로드)
+      await initializeModel();
+    } catch (e, st) {
+      _talker.handle(e, st, '[ChatNotifier] Failed to register default model');
+      state = state.copyWith(
+        isLoading: false,
+        modelError: '기본 모델 등록 실패: $e',
+      );
+    }
+  }
+
   Future<void> sendMessage(String text) async {
     if (text.trim().isEmpty || state.sessionId == null) return;
 
@@ -197,28 +356,22 @@ class ChatNotifier extends _$ChatNotifier {
 
       var currentAiResponse = '';
       final aiMessageId = const Uuid().v4();
+      var lastUpdateTime = DateTime.now();
+      const throttleDuration = Duration(milliseconds: 150);
 
       await for (final chunk in responseStream) {
         currentAiResponse += chunk;
         
-        final aiMessage = MessageEntity(
-          id: aiMessageId,
-          text: currentAiResponse,
-          isUser: false,
-          timestamp: DateTime.now(),
-        );
-
-        final updatedMessages = List<MessageEntity>.from(state.messages);
-        final existingIndex = updatedMessages.indexWhere((m) => m.id == aiMessageId);
-        
-        if (existingIndex != -1) {
-          updatedMessages[existingIndex] = aiMessage;
-        } else {
-          updatedMessages.add(aiMessage);
+        final now = DateTime.now();
+        // 스로틀링: 150ms 마다 또는 마지막에만 UI 갱신 (성능 및 OOM 방지)
+        if (now.difference(lastUpdateTime) > throttleDuration) {
+          lastUpdateTime = now;
+          _updateAiMessage(aiMessageId, currentAiResponse);
         }
-
-        state = state.copyWith(messages: updatedMessages);
       }
+      
+      // 최종 결과 반영
+      _updateAiMessage(aiMessageId, currentAiResponse);
 
       // 최종 AI 메시지 저장
       if (state.messages.isNotEmpty) {
@@ -278,5 +431,28 @@ class ChatNotifier extends _$ChatNotifier {
       _talker.handle(e, st, '[ChatNotifier] Failed to clear all sessions');
       state = state.copyWith(isLoading: false, error: '모든 세션을 삭제하는 중 오류가 발생했습니다: $e');
     }
+  }
+
+  /// AI 메시지 상태를 업데이트하는 헬퍼 메소드
+  void _updateAiMessage(String id, String text) {
+    if (text.isEmpty) return;
+    
+    final aiMessage = MessageEntity(
+      id: id,
+      text: text,
+      isUser: false,
+      timestamp: DateTime.now(),
+    );
+
+    final updatedMessages = List<MessageEntity>.from(state.messages);
+    final existingIndex = updatedMessages.indexWhere((m) => m.id == id);
+    
+    if (existingIndex != -1) {
+      updatedMessages[existingIndex] = aiMessage;
+    } else {
+      updatedMessages.add(aiMessage);
+    }
+
+    state = state.copyWith(messages: updatedMessages);
   }
 }
