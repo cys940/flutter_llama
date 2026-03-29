@@ -3,8 +3,8 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/theme/app_sizes.dart';
 import '../../../../core/theme/app_colors.dart';
-import '../../../../core/widgets/design_decorators.dart';
 import '../../../../core/utils/responsive_helper.dart';
+import '../../../../core/widgets/app_logo.dart';
 import 'dart:ui';
 
 class SettingsScreen extends StatefulWidget {
@@ -42,6 +42,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
               _buildNeuralParametersSection(context, colorScheme, textTheme),
               const SizedBox(height: 64),
               _buildPrivacySection(context, colorScheme, textTheme),
+              const SizedBox(height: 80),
+              Center(
+                child: Column(
+                  children: [
+                    const AppLogo(size: 60, opacity: 0.5),
+                    const SizedBox(height: 16),
+                    Text(
+                      'v1.0.0 (Adaptive)',
+                      style: textTheme.labelSmall?.copyWith(
+                        color: AppColors.onSurfaceVariant.withValues(alpha: 0.3),
+                        letterSpacing: 1.0,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
               const SizedBox(height: 120),
             ]),
           ),
@@ -64,14 +80,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           : null,
       title: Row(
         children: [
-          SignatureGradient(
-            child: Text(
-              'Llama AI',
-              style: textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.w800,
-              ),
-            ),
-          ),
+          const AppLogo(size: 28, showText: true),
           const SizedBox(width: 12),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),

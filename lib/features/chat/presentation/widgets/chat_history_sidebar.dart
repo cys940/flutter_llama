@@ -7,6 +7,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_design_system.dart';
 import '../../../../core/router/route_names.dart';
 import '../../../../core/widgets/design_decorators.dart';
+import '../../../../core/widgets/app_logo.dart';
 import '../providers/chat_provider.dart';
 
 class ChatHistorySidebar extends ConsumerWidget {
@@ -63,46 +64,7 @@ class ChatHistorySidebar extends ConsumerWidget {
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Column(
         children: [
-          Row(
-            children: [
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: design.primaryGradient,
-                  ),
-                ),
-                child: const Icon(LucideIcons.droplets, size: 20, color: Colors.white),
-              ),
-              const SizedBox(width: 12),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Llama Intelligence',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: const Color(0xFFDEE5FF),
-                          fontWeight: FontWeight.w900,
-                          fontFamily: 'Plus Jakarta Sans',
-                        ),
-                  ),
-                  Text(
-                    'SOPHISTICATED CURATOR',
-                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          color: AppColors.onSurfaceVariant.withValues(alpha: 0.6),
-                          fontSize: 8,
-                          letterSpacing: 1.5,
-                          fontWeight: FontWeight.bold,
-                        ),
-                  ),
-                ],
-              ),
-            ],
-          ),
+          const AppLogo(showText: true),
           const SizedBox(height: 32),
           InkWell(
             onTap: () => ref.read(chatProvider.notifier).startNewSession(),

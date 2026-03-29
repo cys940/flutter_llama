@@ -50,6 +50,7 @@ app.*.map.json
 *.pt
 *.onnx
 models/
+assets/models/
 
 # Environment variables
 .env*

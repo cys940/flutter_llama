@@ -10,6 +10,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_design_system.dart';
 import '../../../../core/utils/responsive_helper.dart';
 import '../../../../core/widgets/design_decorators.dart';
+import '../../../../core/widgets/app_logo.dart';
 import '../providers/chat_provider.dart';
 import '../providers/chat_state.dart';
 import '../providers/meeting_provider.dart';
@@ -54,11 +55,12 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     if (result != null && result.files.single.path != null) {
       final path = result.files.single.path!;
       try {
-        await ref.read(chatProvider.notifier).loadModel(path);
+        // 모바일/데스크톱 공통으로 기본 모델로 등록(복사)하고 로드하도록 변경
+        await ref.read(chatProvider.notifier).registerDefaultModel(path);
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('모델 로드 실패: $e')),
+            SnackBar(content: Text('모델 설정 실패: $e')),
           );
         }
       }
@@ -303,15 +305,7 @@ class _ChatBody extends ConsumerWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Container(
-            width: 80,
-            height: 80,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: LinearGradient(colors: context.design.primaryGradient),
-            ),
-            child: const Icon(LucideIcons.droplets, size: 40, color: Colors.white),
-          ).animate().scale(duration: 600.ms, curve: Curves.elasticOut),
+          const AppLogo(size: 80),
           const SizedBox(height: 32),
           Text(
             'Llama Intelligence',
@@ -342,9 +336,7 @@ class _ChatBody extends ConsumerWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const SignatureGradient(
-            child: Icon(LucideIcons.brainCircuit, size: 80, color: Colors.white),
-          ).animate().shimmer(duration: 2.seconds).scale(curve: Curves.elasticOut),
+          const AppLogo(size: 100),
           const SizedBox(height: 32),
           Text(
             'Llama Intelligence',
@@ -356,7 +348,7 @@ class _ChatBody extends ConsumerWidget {
           const SizedBox(height: 48),
           if (!state.isLoading)
             AppButton(
-              text: 'Connect Model',
+              text: context.isMobile ? '기본 모델 설정' : 'Connect Model',
               onPressed: onPickModel,
               useGlow: true,
               width: 220,
@@ -531,17 +523,7 @@ class _EditorialHeaderDelegate extends SliverPersistentHeaderDelegate {
                 color: AppColors.onSurfaceVariant.withValues(alpha: 0.4),
               ),
             const SizedBox(width: 8),
-            Container(
-              width: 36,
-              height: 36,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: LinearGradient(colors: design.primaryGradient),
-              ),
-              child: const Center(
-                child: Text('JD', style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w900)),
-              ),
-            ),
+            const AppLogo(size: 36, animate: false),
           ],
         ),
       ),
