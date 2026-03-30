@@ -395,7 +395,7 @@ class _ChatBody extends ConsumerWidget {
                   const SizedBox(width: 8),
                   IconButton(
                     icon: const Icon(LucideIcons.paperclip, size: 20),
-                    onPressed: () {},
+                    onPressed: null, // TODO: 파일 첨부 기능 구현 예정
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                   IconButton(
@@ -556,5 +556,8 @@ class _EditorialHeaderDelegate extends SliverPersistentHeaderDelegate {
   }
 
   @override
-  bool shouldRebuild(covariant _EditorialHeaderDelegate oldDelegate) => true;
+  bool shouldRebuild(covariant _EditorialHeaderDelegate oldDelegate) =>
+      oldDelegate.isMobile != isMobile ||
+      oldDelegate.modelName != modelName ||
+      oldDelegate.isModelLoaded != isModelLoaded;
 }

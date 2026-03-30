@@ -24,8 +24,9 @@ class ChatLocalDataSourceImpl implements ChatLocalDataSource {
   @override
   Future<void> deleteSession(String sessionId) async {
     final db = await dbHelper.database;
+    // DatabaseHelper에서 PRAGMA foreign_keys = ON을 설정하므로
+    // messages 테이블의 ON DELETE CASCADE가 자동으로 동작합니다.
     await db.delete('sessions', where: 'id = ?', whereArgs: [sessionId]);
-    await db.delete('messages', where: 'sessionId = ?', whereArgs: [sessionId]);
   }
 
   @override
@@ -56,7 +57,8 @@ class ChatLocalDataSourceImpl implements ChatLocalDataSource {
   Future<void> saveMessage(String sessionId, MessageEntity message) async {
     final db = await dbHelper.database;
     final messageJson = message.copyWith(sessionId: sessionId).toJson();
-    await db.insert('messages', messageJson);
+    // replace: 스트리밍 업데이트 중 동일 id의 메시지가 재저장될 경우 충돌 방지
+    await db.insert('messages', messageJson, conflictAlgorithm: ConflictAlgorithm.replace);
 
     // 세션의 마지막 메시지 시간 업데이트
     await db.update(
