@@ -36,13 +36,17 @@ class ChatNotifier extends _$ChatNotifier {
 
   @override
   ChatState build() {
-    // 앱 시작 시 초기 데이터 로드
-    Future.microtask(() async {
-      await fetchAvailableModels();
-      await initializeModel();
-      await fetchSessions();
-    });
+    // 앱 시작 시 초기 데이터 로드.
+    // isLoading / isModelLoaded 가드로 provider 재구성 시 중복 초기화를 방지합니다.
+    Future.microtask(_initialize);
     return const ChatState();
+  }
+
+  Future<void> _initialize() async {
+    if (state.isLoading || state.isModelLoaded) return;
+    await fetchAvailableModels();
+    await initializeModel();
+    await fetchSessions();
   }
 
   /// 기기 내 세션 목록을 불러옵니다.
@@ -128,10 +132,11 @@ class ChatNotifier extends _$ChatNotifier {
         final hasPermission = await platform.checkStoragePermission();
         if (!hasPermission) {
           _talker.info('[ChatNotifier] Requesting permission via PermissionSheet...');
-          final granted = await PermissionSheet.show(context);
-          if (!granted) {
-            state = state.copyWith(error: '저장소 접근 권한이 없어 모델을 등록할 수 없습니다.');
-            return;
+          // Android 13+(API 33+)에서 Permission.storage는 deprecated입니다.
+          // FilePicker는 SAF(Storage Access Framework)를 통해 권한 없이도 동작합니다.
+          // 권한 미허용 시 하드 블록하지 않고 UX 안내만 제공한 후 계속 진행합니다.
+          if (context.mounted) {
+            await PermissionSheet.show(context);
           }
         }
       }
@@ -373,9 +378,15 @@ class ChatNotifier extends _$ChatNotifier {
       // 최종 결과 반영
       _updateAiMessage(aiMessageId, currentAiResponse);
 
-      // 최종 AI 메시지 저장
-      if (state.messages.isNotEmpty) {
-        final finalAiMessage = state.messages.last;
+      // 최종 AI 메시지 저장: state.messages.last 대신 직접 생성한 객체를 저장하여
+      // 스트리밍 도중 다른 메시지가 삽입될 경우에도 올바른 메시지가 저장되도록 합니다.
+      if (currentAiResponse.isNotEmpty) {
+        final finalAiMessage = MessageEntity(
+          id: aiMessageId,
+          text: currentAiResponse,
+          isUser: false,
+          timestamp: DateTime.now(),
+        );
         await ref.read(chatRepositoryProvider).saveMessage(sessionId, finalAiMessage);
       }
     } catch (e, st) {
@@ -408,24 +419,37 @@ class ChatNotifier extends _$ChatNotifier {
   }
 
   Future<void> clearChat() async {
-    if (state.sessionId != null) {
-      await deleteSession(state.sessionId!);
+    final currentSessionId = state.sessionId;
+    if (currentSessionId != null) {
+      await deleteSession(currentSessionId);
     }
-    await startNewSession();
+    // 모델이 로드된 상태에서만 새 세션을 시작합니다.
+    if (state.isModelLoaded) {
+      await startNewSession();
+    }
   }
 
   Future<void> clearAll() async {
     state = state.copyWith(isLoading: true, error: null);
     try {
-      for (final session in state.sessions) {
-        await ref.read(chatRepositoryProvider).deleteSession(session.sessionId);
-      }
-      await fetchSessions();
+      // 순차 처리 대신 병렬로 삭제하여 성능을 개선합니다.
+      final sessionsToDelete = List<SessionEntity>.from(state.sessions);
+      await Future.wait(
+        sessionsToDelete.map(
+          (s) => ref.read(chatRepositoryProvider).deleteSession(s.sessionId),
+        ),
+      );
       state = state.copyWith(
         sessionId: null,
         messages: [],
         isLoading: false,
       );
+      await fetchSessions();
+
+      // 전체 삭제 후 빈 상태로 두지 않고 새 세션을 바로 시작합니다.
+      if (state.isModelLoaded) {
+        await startNewSession();
+      }
       _talker.info('[ChatNotifier] All sessions cleared');
     } catch (e, st) {
       _talker.handle(e, st, '[ChatNotifier] Failed to clear all sessions');

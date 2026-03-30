@@ -32,8 +32,11 @@ class DatabaseHelper {
       version: 2,
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
-      onOpen: (db) {
-        _talker.debug('[DatabaseHelper] Database opened successfully');
+      onOpen: (db) async {
+        // SQLite는 기본적으로 외래 키를 비활성화합니다.
+        // ON DELETE CASCADE 등 외래 키 제약이 실제로 동작하려면 반드시 활성화해야 합니다.
+        await db.execute('PRAGMA foreign_keys = ON');
+        _talker.debug('[DatabaseHelper] Database opened successfully (foreign_keys=ON)');
       },
     );
   }

@@ -53,7 +53,8 @@ class LlamaDataSource {
       final responseStream = _session!.create(
         [LlamaTextContent(prompt)],
         params: GenerationParams(
-          temp: temperature ?? 0.8,
+          // ChatSettings 기본값(0.7)과 일치시킵니다.
+          temp: temperature ?? 0.7,
           maxTokens: maxTokens ?? 2048,
           topP: 0.9,
           topK: 40,
