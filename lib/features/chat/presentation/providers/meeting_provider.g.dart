@@ -41,7 +41,7 @@ final class MeetingNotifierProvider
   }
 }
 
-String _$meetingNotifierHash() => r'2b9b3ac13c4f5fc7de32eafcd52f55c37c05a175';
+String _$meetingNotifierHash() => r'e45d5f22df4ec17eb5e6ab7e079a8d81858733d3';
 
 abstract class _$MeetingNotifier extends $Notifier<MeetingState> {
   MeetingState build();

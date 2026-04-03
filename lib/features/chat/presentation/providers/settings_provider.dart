@@ -40,6 +40,11 @@ class SettingsNotifier extends _$SettingsNotifier {
     await updateSettings(current.copyWith(maxTokens: value));
   }
 
+  Future<void> updateTopP(double value) async {
+    final current = state.value ?? const ChatSettings();
+    await updateSettings(current.copyWith(topP: value));
+  }
+
   Future<void> updateSystemPrompt(String value) async {
     final current = state.value ?? const ChatSettings();
     await updateSettings(current.copyWith(systemPrompt: value));

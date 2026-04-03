@@ -134,6 +134,48 @@ final class ModelRepositoryProvider
 
 String _$modelRepositoryHash() => r'66ccdd9c76be63f469f7bd9713e1ffa8754c8a78';
 
+@ProviderFor(platformService)
+final platformServiceProvider = PlatformServiceProvider._();
+
+final class PlatformServiceProvider
+    extends
+        $FunctionalProvider<PlatformService, PlatformService, PlatformService>
+    with $Provider<PlatformService> {
+  PlatformServiceProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'platformServiceProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$platformServiceHash();
+
+  @$internal
+  @override
+  $ProviderElement<PlatformService> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  PlatformService create(Ref ref) {
+    return platformService(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(PlatformService value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<PlatformService>(value),
+    );
+  }
+}
+
+String _$platformServiceHash() => r'4933ae38df1b8adfd0d770a656657e5eee3ed76f';
+
 @ProviderFor(ChatNotifier)
 final chatProvider = ChatNotifierProvider._();
 
@@ -166,7 +208,7 @@ final class ChatNotifierProvider
   }
 }
 
-String _$chatNotifierHash() => r'3fcc6c5952030627f3f80506fa8819fc052566e8';
+String _$chatNotifierHash() => r'37cb10402ce05e39765c68ff09c3639c859de5c8';
 
 abstract class _$ChatNotifier extends $Notifier<ChatState> {
   ChatState build();

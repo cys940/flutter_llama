@@ -1,4 +1,4 @@
-import 'dart:async';
+import 'dart:async' show StreamSubscription, unawaited;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../../core/di/injection.dart';
 import '../../../../core/services/meeting_summary_service.dart';
@@ -39,7 +39,7 @@ class MeetingNotifier extends _$MeetingNotifier {
       transcript: '',
     );
 
-    _sttSubscription?.cancel();
+    unawaited(_sttSubscription?.cancel());
     _sttSubscription = _sttService.textStream.listen((text) {
       state = state.copyWith(transcript: text);
     });
@@ -51,12 +51,19 @@ class MeetingNotifier extends _$MeetingNotifier {
     if (!state.isRecording) return;
 
     final finalTranscript = state.transcript;
-    final startTime = state.startTime!;
+    final startTime = state.startTime;
+    if (startTime == null) {
+      state = state.copyWith(
+        isRecording: false,
+        error: '회의 시작 시간이 기록되지 않았습니다.',
+      );
+      return;
+    }
     final duration = DateTime.now().difference(startTime);
 
     state = state.copyWith(isRecording: false, isAnalyzing: true);
     await _sttService.stopListening();
-    _sttSubscription?.cancel();
+    unawaited(_sttSubscription?.cancel());
 
     try {
       final metadata = await _summaryService.summarize(
@@ -70,8 +77,8 @@ class MeetingNotifier extends _$MeetingNotifier {
         metadata: metadata,
       );
 
-      // 분석 완료 후 현재 채팅 세션에 결과 저장 (필요 시)
-      // ref.read(chatNotifierProvider.notifier).saveMeetingResult(metadata);
+      // 분석 완료 후 채팅 세션에 결과 저장
+      await ref.read(chatProvider.notifier).saveMeetingResult(metadata);
       
     } catch (e) {
       state = state.copyWith(
@@ -79,6 +86,25 @@ class MeetingNotifier extends _$MeetingNotifier {
         error: '회의 분석 중 오류가 발생했습니다: $e',
       );
     }
+  }
+
+  /// 액션 아이템의 완료 상태를 토글합니다.
+  /// NOTE: 현재 in-memory only로 동작하며, 앱 재시작 시 상태가 초기화됩니다.
+  /// 영속성이 필요할 경우 ChatRepository를 통한 저장 로직 추가가 필요합니다.
+  void toggleActionItem(String itemId) {
+    final metadata = state.metadata;
+    if (metadata == null) return;
+
+    final updatedItems = metadata.actionItems.map((item) {
+      if (item.id == itemId) {
+        return item.copyWith(isCompleted: !item.isCompleted);
+      }
+      return item;
+    }).toList();
+
+    state = state.copyWith(
+      metadata: metadata.copyWith(actionItems: updatedItems),
+    );
   }
 
   void resetMeeting() {

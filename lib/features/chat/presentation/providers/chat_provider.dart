@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io' if (dart.library.html) 'dart:html' as io;
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
@@ -10,6 +11,7 @@ import '../../../../core/services/platform_service.dart';
 import '../../data/datasources/llama_data_source.dart';
 import '../../domain/entities/message_entity.dart';
 import '../../domain/entities/session_entity.dart';
+import '../../domain/entities/meeting_metadata.dart';
 import '../../domain/entities/model_file_entity.dart';
 import '../../domain/repositories/chat_repository.dart';
 import '../../domain/repositories/model_repository.dart';
@@ -134,9 +136,11 @@ class ChatNotifier extends _$ChatNotifier {
           _talker.info('[ChatNotifier] Requesting permission via PermissionSheet...');
           // Android 13+(API 33+)에서 Permission.storage는 deprecated입니다.
           // FilePicker는 SAF(Storage Access Framework)를 통해 권한 없이도 동작합니다.
-          // 권한 미허용 시 하드 블록하지 않고 UX 안내만 제공한 후 계속 진행합니다.
-          if (context.mounted) {
-            await PermissionSheet.show(context);
+          if (!context.mounted) return;
+          final granted = await PermissionSheet.show(context);
+          if (!granted) {
+            state = state.copyWith(error: '저장소 접근 권한이 없어 모델을 등록할 수 없습니다.');
+            return;
           }
         }
       }
@@ -251,7 +255,7 @@ class ChatNotifier extends _$ChatNotifier {
       );
       
       // 백그라운드에서 최신 정렬 순서등을 반영하기 위해 목록 갱신
-      fetchSessions();
+      unawaited(fetchSessions());
     } catch (e, st) {
        _talker.handle(e, st, '[ChatNotifier] Failed to start new session');
        state = state.copyWith(error: '새 대화를 시작할 수 없습니다: $e');
@@ -356,6 +360,7 @@ class ChatNotifier extends _$ChatNotifier {
       final responseStream = repository.sendMessageStream(
         text,
         temperature: settings?.temperature,
+        topP: settings?.topP,
         maxTokens: settings?.maxTokens,
       );
 
@@ -426,6 +431,36 @@ class ChatNotifier extends _$ChatNotifier {
     // 모델이 로드된 상태에서만 새 세션을 시작합니다.
     if (state.isModelLoaded) {
       await startNewSession();
+    }
+  }
+
+  /// 회의 분석 결과를 새 채팅 세션으로 저장합니다.
+  Future<void> saveMeetingResult(MeetingMetadata metadata) async {
+    try {
+      await startNewSession();
+
+      final sessionId = state.sessionId;
+      if (sessionId == null) return;
+
+      final actionItemLines = metadata.actionItems.isEmpty
+          ? '없음'
+          : metadata.actionItems.map((a) => '- ${a.task}${a.assignee != null ? ' (담당: ${a.assignee})' : ''}').join('\n');
+
+      final summaryMessage = MessageEntity(
+        id: const Uuid().v4(),
+        text: '## 회의 요약\n\n${metadata.summary}\n\n### 액션 아이템\n$actionItemLines',
+        isUser: false,
+        timestamp: DateTime.now(),
+      );
+
+      state = state.copyWith(messages: [summaryMessage]);
+      await ref.read(chatRepositoryProvider).saveMessage(sessionId, summaryMessage);
+      await fetchSessions();
+
+      _talker.info('[ChatNotifier] Meeting result saved to session $sessionId');
+    } catch (e, st) {
+      _talker.handle(e, st, '[ChatNotifier] Failed to save meeting result');
+      state = state.copyWith(error: '회의 결과 저장 실패: $e');
     }
   }
 
