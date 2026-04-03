@@ -9,9 +9,9 @@ import 'injection.config.dart';
 final getIt = GetIt.instance;
 
 @InjectableInit()
-Future<void> configureDependencies() async {
+void configureDependencies() {
   getIt.registerLazySingleton<Talker>(() => TalkerFlutter.init());
-  await getIt.init();
+  getIt.init();
 }
 
 @module

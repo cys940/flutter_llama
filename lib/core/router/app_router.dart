@@ -7,6 +7,7 @@ import 'route_names.dart';
 import '../../features/chat/presentation/screens/settings_screen.dart';
 import '../../features/chat/presentation/screens/history_screen.dart';
 import '../../features/chat/presentation/screens/meeting_dashboard_screen.dart';
+import '../../features/chat/presentation/screens/help_faq_screen.dart';
 
 part 'app_router.g.dart';
 
@@ -31,6 +32,10 @@ GoRouter appRouter(Ref ref) {
       GoRoute(
         path: RouteNames.meetingReport,
         builder: (context, state) => const MeetingDashboardScreen(),
+      ),
+      GoRoute(
+        path: RouteNames.helpFaq,
+        builder: (context, state) => const HelpFaqScreen(),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(

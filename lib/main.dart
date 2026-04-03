@@ -14,7 +14,7 @@ void main() async {
   GoogleFonts.config.allowRuntimeFetching = true;
 
   // 의존성 주입 초기화
-  await configureDependencies();
+  configureDependencies();
 
   runApp(
     const ProviderScope(
