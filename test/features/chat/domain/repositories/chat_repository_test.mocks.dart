@@ -47,15 +47,16 @@ class MockChatRepository extends _i1.Mock implements _i2.ChatRepository {
 
   @override
   _i3.Stream<String> sendMessageStream(
-    String? text, {
+    String text, {
     double? temperature,
+    double? topP,
     int? maxTokens,
   }) =>
       (super.noSuchMethod(
             Invocation.method(
               #sendMessageStream,
               [text],
-              {#temperature: temperature, #maxTokens: maxTokens},
+              {#temperature: temperature, #topP: topP, #maxTokens: maxTokens},
             ),
             returnValue: _i3.Stream<String>.empty(),
           )

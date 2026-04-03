@@ -112,15 +112,16 @@ class MockLlamaDataSource extends _i1.Mock implements _i6.LlamaDataSource {
 
   @override
   _i3.Stream<String> generateResponse(
-    String? prompt, {
+    String prompt, {
     double? temperature,
+    double? topP,
     int? maxTokens,
   }) =>
       (super.noSuchMethod(
             Invocation.method(
               #generateResponse,
               [prompt],
-              {#temperature: temperature, #maxTokens: maxTokens},
+              {#temperature: temperature, #topP: topP, #maxTokens: maxTokens},
             ),
             returnValue: _i3.Stream<String>.empty(),
           )
