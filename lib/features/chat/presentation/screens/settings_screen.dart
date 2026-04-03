@@ -1,22 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/theme/app_sizes.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/responsive_helper.dart';
 import '../../../../core/widgets/app_logo.dart';
+import '../../domain/entities/chat_settings.dart';
+import '../providers/settings_provider.dart';
 import 'dart:ui';
 
-class SettingsScreen extends StatefulWidget {
+class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
 
   @override
-  State<SettingsScreen> createState() => _SettingsScreenState();
+  ConsumerState<SettingsScreen> createState() => _SettingsScreenState();
 }
 
-class _SettingsScreenState extends State<SettingsScreen> {
-  double _temperature = 0.85;
-  double _topP = 0.92;
+class _SettingsScreenState extends ConsumerState<SettingsScreen> {
+  // 슬라이더 드래그 중 로컬 시각 업데이트용 (onChangeEnd에서 provider 저장)
+  double? _draggingTemperature;
+  double? _draggingTopP;
+
+  // UI-only 플레이스홀더: ChatSettings에 포함되지 않은 필드
+  // TODO: 실제 기능 구현 시 ChatSettings에 추가 필요
   bool _isTrainingOptOut = true;
   bool _isEncryptionEnabled = true;
 
@@ -24,6 +31,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
+    final settings = ref.watch(settingsProvider).value ?? const ChatSettings();
 
     return CustomScrollView(
       slivers: [
@@ -39,7 +47,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               const SizedBox(height: 48),
               _buildAppearanceSection(context, colorScheme, textTheme),
               const SizedBox(height: 64),
-              _buildNeuralParametersSection(context, colorScheme, textTheme),
+              _buildNeuralParametersSection(context, colorScheme, textTheme, settings),
               const SizedBox(height: 64),
               _buildPrivacySection(context, colorScheme, textTheme),
               const SizedBox(height: 80),
@@ -100,8 +108,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ],
       ),
       actions: [
-        IconButton(icon: const Icon(LucideIcons.user), onPressed: () {}),
-        IconButton(icon: const Icon(LucideIcons.settings, color: AppColors.primary), onPressed: () {}),
+        IconButton(
+          icon: const Icon(LucideIcons.user),
+          onPressed: () {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('프로필 기능은 준비 중입니다.')),
+            );
+          },
+        ),
+        IconButton(icon: const Icon(LucideIcons.settings, color: AppColors.primary), onPressed: null),
         const SizedBox(width: 8),
       ],
     );
@@ -195,7 +210,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Widget _buildNeuralParametersSection(BuildContext context, ColorScheme colorScheme, TextTheme textTheme) {
+  Widget _buildNeuralParametersSection(BuildContext context, ColorScheme colorScheme, TextTheme textTheme, ChatSettings settings) {
+    final temperatureValue = _draggingTemperature ?? settings.temperature;
+    final topPValue = _draggingTopP ?? settings.topP;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -217,19 +235,31 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   _buildSliderRow(
                     title: 'Creativity Temperature',
                     desc: 'Higher values result in more divergent and creative responses.',
-                    value: _temperature,
+                    value: temperatureValue,
                     color: AppColors.primary,
                     gradient: AppColors.primaryGradient,
-                    onChanged: (v) => setState(() => _temperature = v),
+                    onChanged: (v) {
+                      setState(() => _draggingTemperature = v);
+                    },
+                    onChangeEnd: (v) {
+                      setState(() => _draggingTemperature = null);
+                      ref.read(settingsProvider.notifier).updateTemperature(v);
+                    },
                   ),
                   const SizedBox(height: 48),
                   _buildSliderRow(
                     title: 'Nucleus Sampling (Top-P)',
                     desc: 'Limits word choice to the most probable cumulative percentage.',
-                    value: _topP,
+                    value: topPValue,
                     color: AppColors.tertiary,
                     gradient: [AppColors.secondary, AppColors.tertiary],
-                    onChanged: (v) => setState(() => _topP = v),
+                    onChanged: (v) {
+                      setState(() => _draggingTopP = v);
+                    },
+                    onChangeEnd: (v) {
+                      setState(() => _draggingTopP = null);
+                      ref.read(settingsProvider.notifier).updateTopP(v);
+                    },
                   ),
                   const SizedBox(height: 48),
                   _buildModelSelector(colorScheme),
@@ -370,6 +400,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     required Color color,
     required List<Color> gradient,
     required ValueChanged<double> onChanged,
+    ValueChanged<double>? onChangeEnd,
   }) {
     return Column(
       children: [
@@ -432,6 +463,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               child: Slider(
                 value: value,
                 onChanged: onChanged,
+                onChangeEnd: onChangeEnd,
               ),
             ),
           ],
