@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$MessageEntity {
 
- String get id;@JsonKey(includeToJson: true) String? get sessionId; String get text;@JsonKey(name: 'isUser', fromJson: _boolFromInt, toJson: _boolToInt) bool get isUser; DateTime get timestamp;
+ String get id;@JsonKey(includeToJson: true) String? get sessionId; String get text;@BoolIntConverter()@JsonKey(name: 'isUser') bool get isUser; DateTime get timestamp;
 /// Create a copy of MessageEntity
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $MessageEntityCopyWith<$Res>  {
   factory $MessageEntityCopyWith(MessageEntity value, $Res Function(MessageEntity) _then) = _$MessageEntityCopyWithImpl;
 @useResult
 $Res call({
- String id,@JsonKey(includeToJson: true) String? sessionId, String text,@JsonKey(name: 'isUser', fromJson: _boolFromInt, toJson: _boolToInt) bool isUser, DateTime timestamp
+ String id,@JsonKey(includeToJson: true) String? sessionId, String text,@BoolIntConverter()@JsonKey(name: 'isUser') bool isUser, DateTime timestamp
 });
 
 
@@ -157,7 +157,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(includeToJson: true)  String? sessionId,  String text, @JsonKey(name: 'isUser', fromJson: _boolFromInt, toJson: _boolToInt)  bool isUser,  DateTime timestamp)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(includeToJson: true)  String? sessionId,  String text, @BoolIntConverter()@JsonKey(name: 'isUser')  bool isUser,  DateTime timestamp)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _MessageEntity() when $default != null:
 return $default(_that.id,_that.sessionId,_that.text,_that.isUser,_that.timestamp);case _:
@@ -178,7 +178,7 @@ return $default(_that.id,_that.sessionId,_that.text,_that.isUser,_that.timestamp
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(includeToJson: true)  String? sessionId,  String text, @JsonKey(name: 'isUser', fromJson: _boolFromInt, toJson: _boolToInt)  bool isUser,  DateTime timestamp)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(includeToJson: true)  String? sessionId,  String text, @BoolIntConverter()@JsonKey(name: 'isUser')  bool isUser,  DateTime timestamp)  $default,) {final _that = this;
 switch (_that) {
 case _MessageEntity():
 return $default(_that.id,_that.sessionId,_that.text,_that.isUser,_that.timestamp);case _:
@@ -198,7 +198,7 @@ return $default(_that.id,_that.sessionId,_that.text,_that.isUser,_that.timestamp
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(includeToJson: true)  String? sessionId,  String text, @JsonKey(name: 'isUser', fromJson: _boolFromInt, toJson: _boolToInt)  bool isUser,  DateTime timestamp)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(includeToJson: true)  String? sessionId,  String text, @BoolIntConverter()@JsonKey(name: 'isUser')  bool isUser,  DateTime timestamp)?  $default,) {final _that = this;
 switch (_that) {
 case _MessageEntity() when $default != null:
 return $default(_that.id,_that.sessionId,_that.text,_that.isUser,_that.timestamp);case _:
@@ -213,13 +213,13 @@ return $default(_that.id,_that.sessionId,_that.text,_that.isUser,_that.timestamp
 @JsonSerializable()
 
 class _MessageEntity implements MessageEntity {
-  const _MessageEntity({required this.id, @JsonKey(includeToJson: true) this.sessionId, required this.text, @JsonKey(name: 'isUser', fromJson: _boolFromInt, toJson: _boolToInt) required this.isUser, required this.timestamp});
+  const _MessageEntity({required this.id, @JsonKey(includeToJson: true) this.sessionId, required this.text, @BoolIntConverter()@JsonKey(name: 'isUser') required this.isUser, required this.timestamp});
   factory _MessageEntity.fromJson(Map<String, dynamic> json) => _$MessageEntityFromJson(json);
 
 @override final  String id;
 @override@JsonKey(includeToJson: true) final  String? sessionId;
 @override final  String text;
-@override@JsonKey(name: 'isUser', fromJson: _boolFromInt, toJson: _boolToInt) final  bool isUser;
+@override@BoolIntConverter()@JsonKey(name: 'isUser') final  bool isUser;
 @override final  DateTime timestamp;
 
 /// Create a copy of MessageEntity
@@ -255,7 +255,7 @@ abstract mixin class _$MessageEntityCopyWith<$Res> implements $MessageEntityCopy
   factory _$MessageEntityCopyWith(_MessageEntity value, $Res Function(_MessageEntity) _then) = __$MessageEntityCopyWithImpl;
 @override @useResult
 $Res call({
- String id,@JsonKey(includeToJson: true) String? sessionId, String text,@JsonKey(name: 'isUser', fromJson: _boolFromInt, toJson: _boolToInt) bool isUser, DateTime timestamp
+ String id,@JsonKey(includeToJson: true) String? sessionId, String text,@BoolIntConverter()@JsonKey(name: 'isUser') bool isUser, DateTime timestamp
 });
 
 
