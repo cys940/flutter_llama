@@ -3,7 +3,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'model_file_entity.freezed.dart';
 
 @freezed
-class ModelFileEntity with _$ModelFileEntity {
+abstract class ModelFileEntity with _$ModelFileEntity {
   const factory ModelFileEntity({
     required String name,
     required String path,

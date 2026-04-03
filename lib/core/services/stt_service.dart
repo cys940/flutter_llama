@@ -42,9 +42,11 @@ class SttService {
       onResult: _onSpeechResult,
       listenFor: const Duration(hours: 1), // 긴 시간 회의 대응
       pauseFor: const Duration(seconds: 10),
-      cancelOnError: false,
-      partialResults: true,
-      listenMode: ListenMode.dictation,
+      listenOptions: SpeechListenOptions(
+        cancelOnError: false,
+        partialResults: true,
+        listenMode: ListenMode.dictation,
+      ),
     );
   }
 
