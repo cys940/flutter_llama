@@ -309,7 +309,7 @@ class _ChatBody extends ConsumerWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const AppLogo(size: 72, animate: true),
+          const AppLogo(size: 72, useInternalAnimation: true),
           const SizedBox(height: 24),
           Text(
             'Llama Intelligence',
@@ -340,7 +340,7 @@ class _ChatBody extends ConsumerWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const AppLogo(size: 80, animate: true),
+          const AppLogo(size: 80, useInternalAnimation: true),
           const SizedBox(height: 24),
           Text(
             'Llama Intelligence',
@@ -548,7 +548,7 @@ class _EditorialHeaderDelegate extends SliverPersistentHeaderDelegate {
               ),
             ],
             const SizedBox(width: 8),
-            const AppLogo(size: 36, animate: false),
+            const AppLogo(size: 36, useInternalAnimation: false),
           ],
         ),
       ),
