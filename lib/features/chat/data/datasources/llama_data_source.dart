@@ -6,11 +6,11 @@ import '../../../../core/di/injection.dart';
 
 @lazySingleton
 class LlamaDataSource {
-  final LlamaEngine _engine;
+  final LlamaEngine _engine = LlamaEngine(LlamaBackend());
   final Talker _talker = getIt<Talker>();
   ChatSession? _session;
 
-  LlamaDataSource(this._engine);
+  LlamaDataSource();
 
   /// 모델 파일의 경로를 기반으로 로컬 LLM을 초기화합니다.
   Future<void> init(String modelPath) async {

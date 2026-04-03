@@ -1,6 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
-import 'package:mockito/mockito.dart';
 import 'package:llamadart/llamadart.dart';
 import 'package:local_ai_chat/features/chat/data/datasources/llama_data_source.dart';
 import 'package:get_it/get_it.dart';
@@ -11,7 +10,6 @@ import 'llama_data_source_test.mocks.dart';
 @GenerateMocks([LlamaEngine, ChatSession])
 void main() {
   late LlamaDataSource dataSource;
-  late MockLlamaEngine mockEngine;
 
   setUpAll(() {
     final getIt = GetIt.instance;
