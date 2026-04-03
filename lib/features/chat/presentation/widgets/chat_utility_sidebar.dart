@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/design_decorators.dart';
+import '../../domain/constants/prompt_templates.dart';
+import '../providers/chat_provider.dart';
+import '../providers/settings_provider.dart';
 
-class ChatUtilitySidebar extends StatelessWidget {
+class ChatUtilitySidebar extends ConsumerWidget {
   const ChatUtilitySidebar({super.key});
 
+  static const _recommendationPrompts = PromptTemplates.recommendations;
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Container(
@@ -23,7 +29,7 @@ class ChatUtilitySidebar extends StatelessWidget {
           const SizedBox(height: 32),
           _buildSectionHeader(context, 'Recommended Curations', colorScheme.secondary),
           const SizedBox(height: 16),
-          _buildRecommendationList(context, colorScheme),
+          _buildRecommendationList(context, colorScheme, ref),
           const Spacer(),
           _buildProPromotion(context, colorScheme),
         ],
@@ -60,19 +66,25 @@ class ChatUtilitySidebar extends StatelessWidget {
     );
   }
 
-  Widget _buildRecommendationList(BuildContext context, ColorScheme colorScheme) {
+  Widget _buildRecommendationList(BuildContext context, ColorScheme colorScheme, WidgetRef ref) {
     return Column(
       children: [
-        _buildRecommendItem(context, LucideIcons.fileText, 'Design & Psychology', colorScheme.primary),
+        _buildRecommendItem(context, LucideIcons.fileText, 'Design & Psychology', colorScheme.primary, ref),
         const SizedBox(height: 12),
-        _buildRecommendItem(context, LucideIcons.database, 'Cognitive Load Data', colorScheme.secondary),
+        _buildRecommendItem(context, LucideIcons.database, 'Cognitive Load Data', colorScheme.secondary, ref),
       ],
     );
   }
 
-  Widget _buildRecommendItem(BuildContext context, IconData icon, String label, Color iconColor) {
+  Widget _buildRecommendItem(BuildContext context, IconData icon, String label, Color iconColor, WidgetRef ref) {
     return InkWell(
-      onTap: () {},
+      onTap: () async {
+        final prompt = _recommendationPrompts[label];
+        if (prompt != null) {
+          await ref.read(settingsProvider.notifier).updateSystemPrompt(prompt);
+        }
+        await ref.read(chatProvider.notifier).startNewSession();
+      },
       borderRadius: BorderRadius.circular(12),
       child: Container(
         padding: const EdgeInsets.all(12),
@@ -135,7 +147,11 @@ class ChatUtilitySidebar extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('업그레이드 기능은 준비 중입니다.')),
+                );
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.onSurface,
                 foregroundColor: AppColors.surface,

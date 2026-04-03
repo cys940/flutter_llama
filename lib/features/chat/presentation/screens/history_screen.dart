@@ -1,17 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import '../../../../core/router/route_names.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/design_decorators.dart';
 import '../../../../core/theme/app_design_system.dart';
 import '../../../../core/utils/responsive_helper.dart';
+import '../../domain/constants/prompt_templates.dart';
+import '../../domain/entities/session_entity.dart';
+import '../providers/chat_provider.dart';
+import '../providers/sessions_provider.dart';
+import '../providers/settings_provider.dart';
 
-class HistoryScreen extends StatelessWidget {
+class HistoryScreen extends ConsumerWidget {
   const HistoryScreen({super.key});
 
+  static const _templatePrompts = PromptTemplates.discovery;
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
+    final sessionsAsync = ref.watch(sessionsProvider);
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -23,11 +34,11 @@ class HistoryScreen extends StatelessWidget {
             sliver: SliverList(
               delegate: SliverChildListDelegate([
                 const SizedBox(height: 32),
-                _buildDiscoverySection(context, colorScheme, textTheme),
+                _buildDiscoverySection(context, colorScheme, textTheme, ref),
                 const SizedBox(height: 56),
-                _buildRecentSessionsHeader(context, colorScheme, textTheme),
+                _buildRecentSessionsHeader(context, colorScheme, textTheme, sessionsAsync),
                 const SizedBox(height: 24),
-                _buildSessionList(context, colorScheme, textTheme),
+                _buildSessionList(context, colorScheme, textTheme, sessionsAsync, ref),
                 const SizedBox(height: 100),
               ]),
             ),
@@ -105,7 +116,7 @@ class HistoryScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildDiscoverySection(BuildContext context, ColorScheme colorScheme, TextTheme textTheme) {
+  Widget _buildDiscoverySection(BuildContext context, ColorScheme colorScheme, TextTheme textTheme, WidgetRef ref) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -134,7 +145,11 @@ class HistoryScreen extends StatelessWidget {
               ],
             ),
             TextButton(
-              onPressed: () {},
+              onPressed: () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('더 많은 템플릿이 준비 중입니다.')),
+                );
+              },
               child: const Row(
                 children: [
                   Text('View All', style: TextStyle(color: AppColors.onSurfaceVariant, fontSize: 12, fontWeight: FontWeight.bold)),
@@ -159,6 +174,7 @@ class HistoryScreen extends StatelessWidget {
               children: [
                 _buildTemplateCard(
                   context,
+                  ref,
                   'Content Strategy',
                   'Generate editorial calendars and social media hooks.',
                   LucideIcons.sparkles,
@@ -166,6 +182,7 @@ class HistoryScreen extends StatelessWidget {
                 ),
                 _buildTemplateCard(
                   context,
+                  ref,
                   'Code Architect',
                   'Debug complex microservices or refactor legacy patterns.',
                   LucideIcons.terminal,
@@ -173,6 +190,7 @@ class HistoryScreen extends StatelessWidget {
                 ),
                 _buildTemplateCard(
                   context,
+                  ref,
                   'Mental Models',
                   'Deconstruct problems using first principles.',
                   LucideIcons.brain,
@@ -186,46 +204,58 @@ class HistoryScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildTemplateCard(BuildContext context, String title, String desc, IconData icon, Color accent) {
-    return Container(
-      padding: const EdgeInsets.all(32),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceLow,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppColors.outlineVariant.withValues(alpha: 0.1)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: accent.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(12),
+  Widget _buildTemplateCard(BuildContext context, WidgetRef ref, String title, String desc, IconData icon, Color accent) {
+    return InkWell(
+      onTap: () async {
+        final prompt = _templatePrompts[title];
+        if (prompt != null) {
+          await ref.read(settingsProvider.notifier).updateSystemPrompt(prompt);
+        }
+        await ref.read(chatProvider.notifier).startNewSession();
+        if (context.mounted) context.go(RouteNames.chat);
+      },
+      borderRadius: BorderRadius.circular(24),
+      child: Container(
+        padding: const EdgeInsets.all(32),
+        decoration: BoxDecoration(
+          color: AppColors.surfaceLow,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: AppColors.outlineVariant.withValues(alpha: 0.1)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: accent.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(icon, color: accent, size: 20),
             ),
-            child: Icon(icon, color: accent, size: 20),
-          ),
-          const Spacer(),
-          Text(
-            title,
-            style: const TextStyle(
-              fontWeight: FontWeight.w900,
-              fontSize: 18,
-              fontFamily: 'Plus Jakarta Sans',
-              color: AppColors.onSurface,
+            const Spacer(),
+            Text(
+              title,
+              style: const TextStyle(
+                fontWeight: FontWeight.w900,
+                fontSize: 18,
+                fontFamily: 'Plus Jakarta Sans',
+                color: AppColors.onSurface,
+              ),
             ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            desc,
-            style: const TextStyle(color: AppColors.onSurfaceVariant, fontSize: 13, height: 1.5),
-          ),
-        ],
+            const SizedBox(height: 8),
+            Text(
+              desc,
+              style: const TextStyle(color: AppColors.onSurfaceVariant, fontSize: 13, height: 1.5),
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildRecentSessionsHeader(BuildContext context, ColorScheme colorScheme, TextTheme textTheme) {
+  Widget _buildRecentSessionsHeader(BuildContext context, ColorScheme colorScheme, TextTheme textTheme, AsyncValue<List<SessionEntity>> sessionsAsync) {
+    final count = sessionsAsync.value?.length ?? 0;
     return Row(
       children: [
         Text(
@@ -242,66 +272,102 @@ class HistoryScreen extends StatelessWidget {
             color: AppColors.surfaceHigh,
             borderRadius: BorderRadius.circular(20),
           ),
-          child: const Text(
-            '24 Total',
-            style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: AppColors.primary, letterSpacing: 1.0),
+          child: Text(
+            '$count Total',
+            style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: AppColors.primary, letterSpacing: 1.0),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildSessionList(BuildContext context, ColorScheme colorScheme, TextTheme textTheme) {
-    return Column(
-      children: [
-        _buildSessionItem(context, 'The Ethics of Neural Networks', 'Transformer biases in LLMs...', '2m ago', AppColors.primary),
-        _buildSessionItem(context, 'Quantum Computing 101', 'Qubits vs Classical bits...', '1h ago', null),
-        _buildSessionItem(context, 'Rust Memory Management', 'Borrow checker and ownership...', '3h ago', null),
-        _buildSessionItem(context, 'Minimalist Design Trends', 'Neo-brutalism and UX...', 'Oct 12', null),
-      ],
+  Widget _buildSessionList(BuildContext context, ColorScheme colorScheme, TextTheme textTheme, AsyncValue<List<SessionEntity>> sessionsAsync, WidgetRef ref) {
+    return sessionsAsync.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (e, _) => Text('세션을 불러올 수 없습니다: $e', style: const TextStyle(color: AppColors.error)),
+      data: (sessions) {
+        if (sessions.isEmpty) {
+          return const Padding(
+            padding: EdgeInsets.symmetric(vertical: 32),
+            child: Center(
+              child: Text(
+                '아직 대화 기록이 없습니다.',
+                style: TextStyle(color: AppColors.onSurfaceVariant, fontSize: 14),
+              ),
+            ),
+          );
+        }
+        return Column(
+          children: sessions
+              .map((session) => _buildSessionItem(context, ref, session))
+              .toList(),
+        );
+      },
     );
   }
 
-  Widget _buildSessionItem(BuildContext context, String title, String preview, String time, Color? indicator) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceLow,
+  Widget _buildSessionItem(BuildContext context, WidgetRef ref, SessionEntity session) {
+    final now = DateTime.now();
+    final diff = now.difference(session.lastMessageAt);
+    String timeLabel;
+    if (diff.isNegative || diff.inMinutes < 1) {
+      timeLabel = '방금 전';
+    } else if (diff.inMinutes < 60) {
+      timeLabel = '${diff.inMinutes}m ago';
+    } else if (diff.inHours < 24) {
+      timeLabel = '${diff.inHours}h ago';
+    } else {
+      timeLabel = '${session.lastMessageAt.month}/${session.lastMessageAt.day}';
+    }
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: InkWell(
+        onTap: () async {
+          await ref.read(chatProvider.notifier).loadSession(session.sessionId);
+          if (context.mounted) context.go(RouteNames.chat);
+        },
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.outlineVariant.withValues(alpha: 0.1)),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 8,
-            height: 8,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: indicator ?? AppColors.onSurfaceVariant.withValues(alpha: 0.2),
-            ),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+          decoration: BoxDecoration(
+            color: AppColors.surfaceLow,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: AppColors.outlineVariant.withValues(alpha: 0.1)),
           ),
-          const SizedBox(width: 24),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15, color: AppColors.onSurface),
+          child: Row(
+            children: [
+              Container(
+                width: 8,
+                height: 8,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: session.isMeeting ? AppColors.primary : AppColors.onSurfaceVariant.withValues(alpha: 0.2),
                 ),
-                Text(
-                  preview,
-                  style: const TextStyle(color: AppColors.onSurfaceVariant, fontSize: 12),
+              ),
+              const SizedBox(width: 24),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      session.title,
+                      style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15, color: AppColors.onSurface),
+                    ),
+                    Text(
+                      session.isMeeting ? '회의 세션' : '채팅 세션',
+                      style: const TextStyle(color: AppColors.onSurfaceVariant, fontSize: 12),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+              Text(
+                timeLabel,
+                style: const TextStyle(color: AppColors.onSurfaceVariant, fontSize: 11, fontWeight: FontWeight.bold),
+              ),
+            ],
           ),
-          Text(
-            time,
-            style: const TextStyle(color: AppColors.onSurfaceVariant, fontSize: 11, fontWeight: FontWeight.bold),
-          ),
-        ],
+        ),
       ),
     );
   }

@@ -44,11 +44,11 @@ class MeetingDashboardScreen extends ConsumerWidget {
       body: SignatureGradient(
         child: SafeArea(
           child: ResponsiveLayout(
-            mobile: _buildContent(context, metadata),
+            mobile: _buildContent(context, metadata, ref),
             desktop: Center(
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 800),
-                child: _buildContent(context, metadata),
+                child: _buildContent(context, metadata, ref),
               ),
             ),
           ),
@@ -57,7 +57,7 @@ class MeetingDashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildContent(BuildContext context, dynamic metadata) {
+  Widget _buildContent(BuildContext context, dynamic metadata, WidgetRef ref) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(AppSizes.l),
       child: Column(
@@ -67,7 +67,7 @@ class MeetingDashboardScreen extends ConsumerWidget {
           const SizedBox(height: AppSizes.xl),
           _buildSummarySection(context, metadata.summary),
           const SizedBox(height: AppSizes.xl),
-          _buildActionItemsSection(context, metadata.actionItems),
+          _buildActionItemsSection(context, metadata.actionItems, ref),
           const SizedBox(height: AppSizes.xl),
           _buildTranscriptSection(context, metadata.fullTranscript),
         ],
@@ -140,7 +140,7 @@ class MeetingDashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildActionItemsSection(BuildContext context, List<ActionItem> items) {
+  Widget _buildActionItemsSection(BuildContext context, List<ActionItem> items, WidgetRef ref) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -157,7 +157,7 @@ class MeetingDashboardScreen extends ConsumerWidget {
                 children: [
                   Checkbox(
                     value: item.isCompleted,
-                    onChanged: (val) {}, // TODO: 상태 업데이트
+                    onChanged: (val) => ref.read(meetingProvider.notifier).toggleActionItem(item.id),
                     shape: const CircleBorder(),
                   ),
                   const SizedBox(width: AppSizes.s),
