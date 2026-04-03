@@ -11,6 +11,7 @@ abstract class ChatRepository {
   Stream<String> sendMessageStream(
     String text, {
     double? temperature,
+    double? topP,
     int? maxTokens,
   });
 

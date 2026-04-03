@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$ChatSettings {
 
- double get temperature; int get maxTokens; String get systemPrompt; bool get autoTitle;
+ double get temperature; double get topP; int get maxTokens; String get systemPrompt; bool get autoTitle;
 /// Create a copy of ChatSettings
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $ChatSettingsCopyWith<ChatSettings> get copyWith => _$ChatSettingsCopyWithImpl<C
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChatSettings&&(identical(other.temperature, temperature) || other.temperature == temperature)&&(identical(other.maxTokens, maxTokens) || other.maxTokens == maxTokens)&&(identical(other.systemPrompt, systemPrompt) || other.systemPrompt == systemPrompt)&&(identical(other.autoTitle, autoTitle) || other.autoTitle == autoTitle));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChatSettings&&(identical(other.temperature, temperature) || other.temperature == temperature)&&(identical(other.topP, topP) || other.topP == topP)&&(identical(other.maxTokens, maxTokens) || other.maxTokens == maxTokens)&&(identical(other.systemPrompt, systemPrompt) || other.systemPrompt == systemPrompt)&&(identical(other.autoTitle, autoTitle) || other.autoTitle == autoTitle));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,temperature,maxTokens,systemPrompt,autoTitle);
+int get hashCode => Object.hash(runtimeType,temperature,topP,maxTokens,systemPrompt,autoTitle);
 
 @override
 String toString() {
-  return 'ChatSettings(temperature: $temperature, maxTokens: $maxTokens, systemPrompt: $systemPrompt, autoTitle: $autoTitle)';
+  return 'ChatSettings(temperature: $temperature, topP: $topP, maxTokens: $maxTokens, systemPrompt: $systemPrompt, autoTitle: $autoTitle)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $ChatSettingsCopyWith<$Res>  {
   factory $ChatSettingsCopyWith(ChatSettings value, $Res Function(ChatSettings) _then) = _$ChatSettingsCopyWithImpl;
 @useResult
 $Res call({
- double temperature, int maxTokens, String systemPrompt, bool autoTitle
+ double temperature, double topP, int maxTokens, String systemPrompt, bool autoTitle
 });
 
 
@@ -65,9 +65,10 @@ class _$ChatSettingsCopyWithImpl<$Res>
 
 /// Create a copy of ChatSettings
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? temperature = null,Object? maxTokens = null,Object? systemPrompt = null,Object? autoTitle = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? temperature = null,Object? topP = null,Object? maxTokens = null,Object? systemPrompt = null,Object? autoTitle = null,}) {
   return _then(_self.copyWith(
 temperature: null == temperature ? _self.temperature : temperature // ignore: cast_nullable_to_non_nullable
+as double,topP: null == topP ? _self.topP : topP // ignore: cast_nullable_to_non_nullable
 as double,maxTokens: null == maxTokens ? _self.maxTokens : maxTokens // ignore: cast_nullable_to_non_nullable
 as int,systemPrompt: null == systemPrompt ? _self.systemPrompt : systemPrompt // ignore: cast_nullable_to_non_nullable
 as String,autoTitle: null == autoTitle ? _self.autoTitle : autoTitle // ignore: cast_nullable_to_non_nullable
@@ -156,10 +157,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( double temperature,  int maxTokens,  String systemPrompt,  bool autoTitle)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( double temperature,  double topP,  int maxTokens,  String systemPrompt,  bool autoTitle)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ChatSettings() when $default != null:
-return $default(_that.temperature,_that.maxTokens,_that.systemPrompt,_that.autoTitle);case _:
+return $default(_that.temperature,_that.topP,_that.maxTokens,_that.systemPrompt,_that.autoTitle);case _:
   return orElse();
 
 }
@@ -177,10 +178,10 @@ return $default(_that.temperature,_that.maxTokens,_that.systemPrompt,_that.autoT
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( double temperature,  int maxTokens,  String systemPrompt,  bool autoTitle)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( double temperature,  double topP,  int maxTokens,  String systemPrompt,  bool autoTitle)  $default,) {final _that = this;
 switch (_that) {
 case _ChatSettings():
-return $default(_that.temperature,_that.maxTokens,_that.systemPrompt,_that.autoTitle);case _:
+return $default(_that.temperature,_that.topP,_that.maxTokens,_that.systemPrompt,_that.autoTitle);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -197,10 +198,10 @@ return $default(_that.temperature,_that.maxTokens,_that.systemPrompt,_that.autoT
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( double temperature,  int maxTokens,  String systemPrompt,  bool autoTitle)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( double temperature,  double topP,  int maxTokens,  String systemPrompt,  bool autoTitle)?  $default,) {final _that = this;
 switch (_that) {
 case _ChatSettings() when $default != null:
-return $default(_that.temperature,_that.maxTokens,_that.systemPrompt,_that.autoTitle);case _:
+return $default(_that.temperature,_that.topP,_that.maxTokens,_that.systemPrompt,_that.autoTitle);case _:
   return null;
 
 }
@@ -212,10 +213,11 @@ return $default(_that.temperature,_that.maxTokens,_that.systemPrompt,_that.autoT
 @JsonSerializable()
 
 class _ChatSettings implements ChatSettings {
-  const _ChatSettings({this.temperature = 0.7, this.maxTokens = 2048, this.systemPrompt = 'You are a helpful AI assistant.', this.autoTitle = true});
+  const _ChatSettings({this.temperature = 0.7, this.topP = 0.9, this.maxTokens = 2048, this.systemPrompt = 'You are a helpful AI assistant.', this.autoTitle = true});
   factory _ChatSettings.fromJson(Map<String, dynamic> json) => _$ChatSettingsFromJson(json);
 
 @override@JsonKey() final  double temperature;
+@override@JsonKey() final  double topP;
 @override@JsonKey() final  int maxTokens;
 @override@JsonKey() final  String systemPrompt;
 @override@JsonKey() final  bool autoTitle;
@@ -233,16 +235,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ChatSettings&&(identical(other.temperature, temperature) || other.temperature == temperature)&&(identical(other.maxTokens, maxTokens) || other.maxTokens == maxTokens)&&(identical(other.systemPrompt, systemPrompt) || other.systemPrompt == systemPrompt)&&(identical(other.autoTitle, autoTitle) || other.autoTitle == autoTitle));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ChatSettings&&(identical(other.temperature, temperature) || other.temperature == temperature)&&(identical(other.topP, topP) || other.topP == topP)&&(identical(other.maxTokens, maxTokens) || other.maxTokens == maxTokens)&&(identical(other.systemPrompt, systemPrompt) || other.systemPrompt == systemPrompt)&&(identical(other.autoTitle, autoTitle) || other.autoTitle == autoTitle));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,temperature,maxTokens,systemPrompt,autoTitle);
+int get hashCode => Object.hash(runtimeType,temperature,topP,maxTokens,systemPrompt,autoTitle);
 
 @override
 String toString() {
-  return 'ChatSettings(temperature: $temperature, maxTokens: $maxTokens, systemPrompt: $systemPrompt, autoTitle: $autoTitle)';
+  return 'ChatSettings(temperature: $temperature, topP: $topP, maxTokens: $maxTokens, systemPrompt: $systemPrompt, autoTitle: $autoTitle)';
 }
 
 
@@ -253,7 +255,7 @@ abstract mixin class _$ChatSettingsCopyWith<$Res> implements $ChatSettingsCopyWi
   factory _$ChatSettingsCopyWith(_ChatSettings value, $Res Function(_ChatSettings) _then) = __$ChatSettingsCopyWithImpl;
 @override @useResult
 $Res call({
- double temperature, int maxTokens, String systemPrompt, bool autoTitle
+ double temperature, double topP, int maxTokens, String systemPrompt, bool autoTitle
 });
 
 
@@ -270,9 +272,10 @@ class __$ChatSettingsCopyWithImpl<$Res>
 
 /// Create a copy of ChatSettings
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? temperature = null,Object? maxTokens = null,Object? systemPrompt = null,Object? autoTitle = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? temperature = null,Object? topP = null,Object? maxTokens = null,Object? systemPrompt = null,Object? autoTitle = null,}) {
   return _then(_ChatSettings(
 temperature: null == temperature ? _self.temperature : temperature // ignore: cast_nullable_to_non_nullable
+as double,topP: null == topP ? _self.topP : topP // ignore: cast_nullable_to_non_nullable
 as double,maxTokens: null == maxTokens ? _self.maxTokens : maxTokens // ignore: cast_nullable_to_non_nullable
 as int,systemPrompt: null == systemPrompt ? _self.systemPrompt : systemPrompt // ignore: cast_nullable_to_non_nullable
 as String,autoTitle: null == autoTitle ? _self.autoTitle : autoTitle // ignore: cast_nullable_to_non_nullable

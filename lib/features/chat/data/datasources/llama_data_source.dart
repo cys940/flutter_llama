@@ -41,6 +41,7 @@ class LlamaDataSource {
   Stream<String> generateResponse(
     String prompt, {
     double? temperature,
+    double? topP,
     int? maxTokens,
   }) async* {
     if (_session == null) {
@@ -56,7 +57,7 @@ class LlamaDataSource {
           // ChatSettings 기본값(0.7)과 일치시킵니다.
           temp: temperature ?? 0.7,
           maxTokens: maxTokens ?? 2048,
-          topP: 0.9,
+          topP: topP ?? 0.9,
           topK: 40,
         ),
       );

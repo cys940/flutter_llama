@@ -9,6 +9,7 @@ part of 'chat_settings.dart';
 _ChatSettings _$ChatSettingsFromJson(Map<String, dynamic> json) =>
     _ChatSettings(
       temperature: (json['temperature'] as num?)?.toDouble() ?? 0.7,
+      topP: (json['topP'] as num?)?.toDouble() ?? 0.9,
       maxTokens: (json['maxTokens'] as num?)?.toInt() ?? 2048,
       systemPrompt:
           json['systemPrompt'] as String? ?? 'You are a helpful AI assistant.',
@@ -18,6 +19,7 @@ _ChatSettings _$ChatSettingsFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$ChatSettingsToJson(_ChatSettings instance) =>
     <String, dynamic>{
       'temperature': instance.temperature,
+      'topP': instance.topP,
       'maxTokens': instance.maxTokens,
       'systemPrompt': instance.systemPrompt,
       'autoTitle': instance.autoTitle,

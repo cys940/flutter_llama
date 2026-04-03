@@ -24,11 +24,13 @@ class ChatRepositoryImpl implements ChatRepository {
   Stream<String> sendMessageStream(
     String text, {
     double? temperature,
+    double? topP,
     int? maxTokens,
   }) {
     return llamaDataSource.generateResponse(
       text,
       temperature: temperature,
+      topP: topP,
       maxTokens: maxTokens,
     );
   }
