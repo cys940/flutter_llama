@@ -7,30 +7,47 @@ class AppLogo extends StatelessWidget {
     super.key,
     this.size = 40,
     this.showText = false,
-    this.animate = true,
+    this.useInternalAnimation = true,
     this.textColor,
     this.opacity = 1.0,
   });
 
   final double size;
   final bool showText;
-  final bool animate;
+  final bool useInternalAnimation;
   final Color? textColor;
   final double opacity;
 
   @override
   Widget build(BuildContext context) {
-    Widget logo = Opacity(
-      opacity: opacity,
-      child: Image.asset(
-        'assets/images/digital_curator_logo.png',
-        width: size,
-        height: size,
-        fit: BoxFit.contain,
+    Widget logoBody = Container(
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(
+            color: (textColor ?? const Color(0xFF4D7CFF)).withOpacity(0.15),
+            blurRadius: 20,
+            spreadRadius: 2,
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(size / 2),
+        child: Image.asset(
+          'assets/images/digital_curator_logo.png',
+          width: size,
+          height: size,
+          fit: BoxFit.cover,
+        ),
       ),
     );
 
-    if (animate) {
+    Widget logo = Opacity(
+      opacity: opacity,
+      child: logoBody,
+    );
+
+    if (useInternalAnimation) {
       logo = logo.animate()
           .fadeIn(duration: 800.ms)
           .scale(
@@ -39,15 +56,13 @@ class AppLogo extends StatelessWidget {
             curve: Curves.easeOutBack,
           )
           .then()
-          // 지속적으로 떠다니는(Floating) 효과
           .animate(onPlay: (controller) => controller.repeat(reverse: true))
           .moveY(begin: -2.0, end: 2.0, duration: 2.seconds, curve: Curves.easeInOutSine)
-          // 주기적인 반짝임(Shimmer) 효과
           .animate(onPlay: (controller) => controller.repeat())
           .shimmer(
             duration: 3.seconds, 
             delay: 5.seconds, 
-            color: Colors.white.withValues(alpha: 0.1),
+            color: Colors.white.withOpacity(0.1),
           );
     }
 
@@ -58,7 +73,7 @@ class AppLogo extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         logo,
-        const SizedBox(width: 12),
+        const SizedBox(width: 16),
         Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -69,17 +84,19 @@ class AppLogo extends StatelessWidget {
                 color: textColor ?? const Color(0xFFDEE5FF),
                 fontWeight: FontWeight.w900,
                 fontFamily: 'Plus Jakarta Sans',
-                letterSpacing: -0.5,
-                height: 1.1,
+                letterSpacing: -0.8,
+                height: 1.0,
+                fontSize: size * 0.45,
               ),
             ),
+            const SizedBox(height: 2),
             Text(
               'LOCAL AI INTELLIGENCE',
               style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                color: (textColor ?? Colors.white).withValues(alpha: 0.5),
-                fontSize: 8,
-                letterSpacing: 1.5,
-                fontWeight: FontWeight.bold,
+                color: (textColor ?? Colors.white).withOpacity(0.4),
+                fontSize: size * 0.22,
+                letterSpacing: 1.2,
+                fontWeight: FontWeight.w800,
               ),
             ),
           ],

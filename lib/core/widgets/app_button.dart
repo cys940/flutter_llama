@@ -85,7 +85,7 @@ class AppButton extends StatelessWidget {
 
     if (useGlow && onPressed != null) {
       button = GlowDecorator(
-        glowColor: actualBgColor.withValues(alpha: 0.15),
+        glowColor: actualBgColor.withOpacity(0.15),
         borderRadius: BorderRadius.circular(AppSizes.radiusM),
         child: button,
       );

@@ -41,7 +41,7 @@ class ChatHistorySidebar extends ConsumerWidget {
               child: Text(
                 'HISTORY',
                 style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                      color: AppColors.onSurfaceVariant.withValues(alpha: 0.4),
+                      color: AppColors.onSurfaceVariant.withOpacity(0.4),
                       letterSpacing: 2.0,
                     ),
               ),
@@ -79,7 +79,7 @@ class ChatHistorySidebar extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
-                    color: design.primaryGradient[0].withValues(alpha: 0.2),
+                    color: design.primaryGradient[0].withOpacity(0.2),
                     blurRadius: 12,
                     offset: const Offset(0, 4),
                   ),
@@ -125,7 +125,7 @@ class ChatHistorySidebar extends ConsumerWidget {
           padding: const EdgeInsets.only(bottom: 6.0),
           child: GlowDecorator(
             isFocused: isSelected,
-            glowColor: design.glowColor.withValues(alpha: 0.1),
+            glowColor: design.glowColor.withOpacity(0.1),
             borderRadius: BorderRadius.circular(16),
             child: InkWell(
               onTap: () {
@@ -152,7 +152,7 @@ class ChatHistorySidebar extends ConsumerWidget {
                       size: 18,
                       color: isSelected
                           ? AppColors.primary
-                          : AppColors.onSurfaceVariant.withValues(alpha: 0.4),
+                          : AppColors.onSurfaceVariant.withOpacity(0.4),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
@@ -161,7 +161,7 @@ class ChatHistorySidebar extends ConsumerWidget {
                         style: TextStyle(
                           color: isSelected
                               ? AppColors.onSurface
-                              : AppColors.onSurfaceVariant.withValues(alpha: 0.8),
+                              : AppColors.onSurfaceVariant.withOpacity(0.8),
                           fontSize: 14,
                           fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
                         ),
@@ -184,7 +184,7 @@ class ChatHistorySidebar extends ConsumerWidget {
       child: Text(
         'No history yet',
         style: Theme.of(context).textTheme.labelMedium?.copyWith(
-              color: AppColors.onSurfaceVariant.withValues(alpha: 0.3),
+              color: AppColors.onSurfaceVariant.withOpacity(0.3),
             ),
       ),
     );
@@ -234,12 +234,12 @@ class _SidebarAction extends StatelessWidget {
           children: [
             Icon(icon,
                 size: 20,
-                color: AppColors.onSurfaceVariant.withValues(alpha: 0.5)),
+                color: AppColors.onSurfaceVariant.withOpacity(0.5)),
             const SizedBox(width: 16),
             Text(
               label,
               style: TextStyle(
-                color: AppColors.onSurfaceVariant.withValues(alpha: 0.8),
+                color: AppColors.onSurfaceVariant.withOpacity(0.8),
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
               ),

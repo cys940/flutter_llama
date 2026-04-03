@@ -23,9 +23,9 @@ class PermissionSheet extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
       decoration: BoxDecoration(
-        color: AppColors.surface.withValues(alpha: 0.95),
+        color: AppColors.surface.withOpacity(0.95),
         borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+        border: Border.all(color: Colors.white.withOpacity(0.1)),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -35,7 +35,7 @@ class PermissionSheet extends StatelessWidget {
             width: 40,
             height: 4,
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.2),
+              color: Colors.white.withOpacity(0.2),
               borderRadius: BorderRadius.circular(2),
             ),
           ),
@@ -45,7 +45,7 @@ class PermissionSheet extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.1),
+              color: AppColors.primary.withOpacity(0.1),
               shape: BoxShape.circle,
             ),
             child: const Icon(
@@ -72,7 +72,7 @@ class PermissionSheet extends StatelessWidget {
             '선택하신 AI 모델 파일을 안전하게 앱 내부로 복사하기 위해 기기 저장소 접근 권한이 필요합니다.\n\n앱은 오직 귀하가 선택한 모델 파일에만 접근하며, 외부로 데이터를 전송하지 않습니다.',
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: AppColors.onSurfaceVariant.withValues(alpha: 0.8),
+              color: AppColors.onSurfaceVariant.withOpacity(0.8),
               fontSize: 15,
               height: 1.6,
             ),
@@ -104,7 +104,7 @@ class PermissionSheet extends StatelessWidget {
             child: Text(
               '나중에 하기',
               style: TextStyle(
-                color: AppColors.onSurfaceVariant.withValues(alpha: 0.5),
+                color: AppColors.onSurfaceVariant.withOpacity(0.5),
                 fontSize: 14,
               ),
             ),

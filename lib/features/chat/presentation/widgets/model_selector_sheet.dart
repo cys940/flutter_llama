@@ -34,10 +34,10 @@ class ModelSelectorSheet extends ConsumerWidget {
           decoration: BoxDecoration(
             color: AppColors.surface,
             borderRadius: BorderRadius.circular(32),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+            border: Border.all(color: Colors.white.withOpacity(0.1)),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.5),
+                color: Colors.black.withOpacity(0.5),
                 blurRadius: 40,
                 offset: const Offset(0, 20),
               ),
@@ -54,9 +54,9 @@ class ModelSelectorSheet extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
       decoration: BoxDecoration(
-        color: AppColors.surface.withValues(alpha: 0.9),
+        color: AppColors.surface.withOpacity(0.9),
         borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+        border: Border.all(color: Colors.white.withOpacity(0.1)),
       ),
       child: content,
     );
@@ -85,7 +85,7 @@ class ModelSelectorSheet extends ConsumerWidget {
         Text(
           platform.isWeb 
               ? '브라우저에서 실행 가능한 최적화된 모델을 선택하세요.'
-              : '채팅에 사용할 GGUF 모델을 선택하거나 추가하세요.',
+              : '채팅에 사용할 GGUF 모델을 선택하세요.',
           style: Theme.of(context).textTheme.bodyMedium,
         ),
         const SizedBox(height: 16),
@@ -121,20 +121,6 @@ class ModelSelectorSheet extends ConsumerWidget {
         ),
 
         const SizedBox(height: 24),
-
-        // Add Model Button (Hide or change for Web)
-        if (!state.isCopying && !state.isVerifying)
-          ElevatedButton.icon(
-            onPressed: () => notifier.pickAndRegisterModel(context),
-            icon: Icon(platform.isWeb ? LucideIcons.uploadCloud : LucideIcons.plus, size: 20),
-            label: Text(platform.isWeb ? '브라우저에 모델 파일 불러오기' : '새로운 모델 추가하기'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
-              foregroundColor: Colors.white,
-              minimumSize: const Size(double.infinity, 56),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            ),
-          ).animate().fadeIn().scale(),
         
         // Error Message
         if (state.error != null)
@@ -155,9 +141,9 @@ class ModelSelectorSheet extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.primary.withValues(alpha: 0.1),
+        color: AppColors.primary.withOpacity(0.1),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppColors.primary.withValues(alpha: 0.2)),
+        border: Border.all(color: AppColors.primary.withOpacity(0.2)),
       ),
       child: Column(
         children: [
@@ -195,8 +181,8 @@ class ModelSelectorSheet extends ConsumerWidget {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: isSelected 
-              ? AppColors.primary.withValues(alpha: 0.15) 
-              : AppColors.surfaceVariant.withValues(alpha: 0.3),
+              ? AppColors.primary.withOpacity(0.15) 
+              : AppColors.surfaceVariant.withOpacity(0.3),
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: isSelected ? AppColors.primary : Colors.transparent,
@@ -234,7 +220,7 @@ class ModelSelectorSheet extends ConsumerWidget {
                   Text(
                     platform.isWeb && model.path.startsWith('http') ? '권장 모델 • $sizeStr' : sizeStr,
                     style: TextStyle(
-                      color: AppColors.onSurfaceVariant.withValues(alpha: 0.7),
+                      color: AppColors.onSurfaceVariant.withOpacity(0.7),
                       fontSize: 12,
                     ),
                   ),
@@ -253,10 +239,10 @@ class ModelSelectorSheet extends ConsumerWidget {
       children: [
         const SizedBox(height: 40),
         Icon(LucideIcons.fileSearch, size: 60, 
-            color: AppColors.onSurfaceVariant.withValues(alpha: 0.3)),
+            color: AppColors.onSurfaceVariant.withOpacity(0.3)),
         const SizedBox(height: 16),
         const Text(
-          '등록된 모델이 없습니다.\n모델을 추가하거나 선택해 주세요.',
+          '등록된 모델이 없습니다.\n기기 저장소(models 폴더)에 모델 파일을 넣어주세요.',
           textAlign: TextAlign.center,
           style: TextStyle(color: AppColors.onSurfaceVariant),
         ),
@@ -275,9 +261,9 @@ class ModelSelectorSheet extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.surfaceVariant.withValues(alpha: 0.2),
+        color: AppColors.surfaceVariant.withOpacity(0.2),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+        border: Border.all(color: Colors.white.withOpacity(0.05)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -288,7 +274,7 @@ class ModelSelectorSheet extends ConsumerWidget {
               Text(
                 '기기 저장 공간',
                 style: TextStyle(
-                  color: AppColors.onSurfaceVariant.withValues(alpha: 0.7),
+                  color: AppColors.onSurfaceVariant.withOpacity(0.7),
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
                 ),
@@ -308,7 +294,7 @@ class ModelSelectorSheet extends ConsumerWidget {
             borderRadius: BorderRadius.circular(4),
             child: LinearProgressIndicator(
               value: usedRatio,
-              backgroundColor: Colors.white.withValues(alpha: 0.1),
+              backgroundColor: Colors.white.withOpacity(0.1),
               color: isLowSpace ? AppColors.error : AppColors.primary,
               minHeight: 6,
             ),
@@ -322,9 +308,9 @@ class ModelSelectorSheet extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.secondary.withValues(alpha: 0.1),
+        color: AppColors.secondary.withOpacity(0.1),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppColors.secondary.withValues(alpha: 0.2)),
+        border: Border.all(color: AppColors.secondary.withOpacity(0.2)),
       ),
       child: Row(
         children: [
@@ -348,7 +334,7 @@ class ModelSelectorSheet extends ConsumerWidget {
                 Text(
                   'GGUF 포맷 및 WebGPU 최적화 상태를 확인하고 있습니다.',
                   style: TextStyle(
-                    color: AppColors.onSurfaceVariant.withValues(alpha: 0.7),
+                    color: AppColors.onSurfaceVariant.withOpacity(0.7),
                     fontSize: 12,
                   ),
                 ),
@@ -357,6 +343,6 @@ class ModelSelectorSheet extends ConsumerWidget {
           ),
         ],
       ),
-    ).animate().fadeIn().shimmer(duration: 2.seconds, color: Colors.white.withValues(alpha: 0.1));
+    ).animate().fadeIn().shimmer(duration: 2.seconds, color: Colors.white.withOpacity(0.1));
   }
 }

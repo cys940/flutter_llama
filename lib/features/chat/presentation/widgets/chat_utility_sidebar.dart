@@ -118,11 +118,11 @@ class ChatUtilitySidebar extends ConsumerWidget {
           end: Alignment.bottomRight,
           colors: [
             AppColors.surfaceHigh,
-            AppColors.surfaceVariant.withValues(alpha: 0.5),
+            AppColors.surfaceVariant.withOpacity(0.5),
           ],
         ),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppColors.outlineVariant.withValues(alpha: 0.2)),
+        border: Border.all(color: AppColors.outlineVariant.withOpacity(0.2)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

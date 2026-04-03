@@ -8,6 +8,7 @@ class AppTextField extends StatefulWidget {
   const AppTextField({
     super.key,
     this.controller,
+    this.focusNode,
     this.hintText,
     this.onSubmitted,
     this.autofocus = false,
@@ -16,6 +17,7 @@ class AppTextField extends StatefulWidget {
   });
 
   final TextEditingController? controller;
+  final FocusNode? focusNode;
   final String? hintText;
   final bool autofocus;
   final int maxLines;
@@ -27,26 +29,30 @@ class AppTextField extends StatefulWidget {
 }
 
 class _AppTextFieldState extends State<AppTextField> {
-  late FocusNode _focusNode;
+  FocusNode? _internalFocusNode;
+  FocusNode get _effectiveFocusNode => widget.focusNode ?? _internalFocusNode!;
   bool _isFocused = false;
 
   @override
   void initState() {
     super.initState();
-    _focusNode = FocusNode();
-    _focusNode.addListener(_onFocusChange);
+    if (widget.focusNode == null) {
+      _internalFocusNode = FocusNode();
+    }
+    _effectiveFocusNode.addListener(_onFocusChange);
+    _isFocused = _effectiveFocusNode.hasFocus;
   }
 
   void _onFocusChange() {
     setState(() {
-      _isFocused = _focusNode.hasFocus;
+      _isFocused = _effectiveFocusNode.hasFocus;
     });
   }
 
   @override
   void dispose() {
-    _focusNode.removeListener(_onFocusChange);
-    _focusNode.dispose();
+    _effectiveFocusNode.removeListener(_onFocusChange);
+    _internalFocusNode?.dispose();
     super.dispose();
   }
 
@@ -65,7 +71,7 @@ class _AppTextFieldState extends State<AppTextField> {
         blur: design.glassBlur / 2, // 덜 강한 블러 적용
         child: TextField(
           controller: widget.controller,
-          focusNode: _focusNode,
+          focusNode: _effectiveFocusNode,
           onSubmitted: widget.onSubmitted,
           onChanged: widget.onChanged,
           autofocus: widget.autofocus,
