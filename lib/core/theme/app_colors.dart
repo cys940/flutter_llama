@@ -35,9 +35,12 @@ class AppColors {
   
   // Gradients (135-degree Flow)
   static const List<Color> primaryGradient = [Color(0xFF9FA7FF), Color(0xFF3ADFFA)];
+  static const List<Color> secondaryGradient = [Color(0xFF3ADFFA), Color(0xFFC180FF)]; // Flow to Violet
   static const List<Color> surfaceGradient = [Color(0xFF091328), Color(0xFF060E20)];
 
   // Neutrals for subtle effects
   static const Color outline = Color(0xFF6D758C);
   static const Color outlineVariant = Color(0x2640485D); // 15% opacity as per "Ghost Border" rule
+  static const Color ambientShadow = Color(0x14000000); // 8% opacity, tinted with surfaceLowest
+  static const Color barrier = Color(0x99060E20); 
 }

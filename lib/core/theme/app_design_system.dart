@@ -5,60 +5,76 @@ import 'package:flutter/material.dart';
 class AppDesignSystem extends ThemeExtension<AppDesignSystem> {
   const AppDesignSystem({
     required this.primaryGradient,
+    required this.secondaryGradient,
     required this.glassOpacity,
     required this.glassBlur,
     required this.glowColor,
     required this.aiBubbleRadius,
     required this.userBubbleRadius,
     required this.cardShadow,
+    required this.focusGlow,
     required this.surfaceRadiusLg,
     required this.surfaceRadiusMd,
     required this.surfaceRadiusSm,
     required this.aiSpringCurve,
     required this.glassOpacityContainer,
+    required this.editorialMaxWidth,
+    required this.sidebarWidth,
   });
 
   final List<Color> primaryGradient;
+  final List<Color> secondaryGradient;
   final double glassOpacity;
   final double glassBlur;
   final Color glowColor;
   final BorderRadius aiBubbleRadius;
   final BorderRadius userBubbleRadius;
   final BoxShadow cardShadow;
+  final BoxShadow focusGlow;
   final double surfaceRadiusLg;
   final double surfaceRadiusMd;
   final double surfaceRadiusSm;
   final Curve aiSpringCurve;
   final double glassOpacityContainer;
+  final double editorialMaxWidth;
+  final double sidebarWidth;
 
   @override
   AppDesignSystem copyWith({
     List<Color>? primaryGradient,
+    List<Color>? secondaryGradient,
     double? glassOpacity,
     double? glassBlur,
     Color? glowColor,
     BorderRadius? aiBubbleRadius,
     BorderRadius? userBubbleRadius,
     BoxShadow? cardShadow,
+    BoxShadow? focusGlow,
     double? surfaceRadiusLg,
     double? surfaceRadiusMd,
     double? surfaceRadiusSm,
     Curve? aiSpringCurve,
     double? glassOpacityContainer,
+    double? editorialMaxWidth,
+    double? sidebarWidth,
   }) {
     return AppDesignSystem(
       primaryGradient: primaryGradient ?? this.primaryGradient,
+      secondaryGradient: secondaryGradient ?? this.secondaryGradient,
       glassOpacity: glassOpacity ?? this.glassOpacity,
       glassBlur: glassBlur ?? this.glassBlur,
       glowColor: glowColor ?? this.glowColor,
       aiBubbleRadius: aiBubbleRadius ?? this.aiBubbleRadius,
       userBubbleRadius: userBubbleRadius ?? this.userBubbleRadius,
       cardShadow: cardShadow ?? this.cardShadow,
+      focusGlow: focusGlow ?? this.focusGlow,
       surfaceRadiusLg: surfaceRadiusLg ?? this.surfaceRadiusLg,
       surfaceRadiusMd: surfaceRadiusMd ?? this.surfaceRadiusMd,
       surfaceRadiusSm: surfaceRadiusSm ?? this.surfaceRadiusSm,
       aiSpringCurve: aiSpringCurve ?? this.aiSpringCurve,
       glassOpacityContainer: glassOpacityContainer ?? this.glassOpacityContainer,
+      editorialMaxWidth: editorialMaxWidth ?? this.editorialMaxWidth,
+      sidebarWidth: sidebarWidth ?? this.sidebarWidth,
     );
   }
 
@@ -70,17 +86,24 @@ class AppDesignSystem extends ThemeExtension<AppDesignSystem> {
         Color.lerp(primaryGradient[0], other.primaryGradient[0], t)!,
         Color.lerp(primaryGradient[1], other.primaryGradient[1], t)!,
       ],
+      secondaryGradient: [
+        Color.lerp(secondaryGradient[0], other.secondaryGradient[0], t)!,
+        Color.lerp(secondaryGradient[1], other.secondaryGradient[1], t)!,
+      ],
       glassOpacity: (glassOpacity + (other.glassOpacity - glassOpacity) * t),
       glassBlur: (glassBlur + (other.glassBlur - glassBlur) * t),
       glowColor: Color.lerp(glowColor, other.glowColor, t)!,
       aiBubbleRadius: BorderRadius.lerp(aiBubbleRadius, other.aiBubbleRadius, t)!,
       userBubbleRadius: BorderRadius.lerp(userBubbleRadius, other.userBubbleRadius, t)!,
       cardShadow: BoxShadow.lerp(cardShadow, other.cardShadow, t)!,
+      focusGlow: BoxShadow.lerp(focusGlow, other.focusGlow, t)!,
       surfaceRadiusLg: (surfaceRadiusLg + (other.surfaceRadiusLg - surfaceRadiusLg) * t),
       surfaceRadiusMd: (surfaceRadiusMd + (other.surfaceRadiusMd - surfaceRadiusMd) * t),
       surfaceRadiusSm: (surfaceRadiusSm + (other.surfaceRadiusSm - surfaceRadiusSm) * t),
       aiSpringCurve: t < 0.5 ? aiSpringCurve : other.aiSpringCurve,
       glassOpacityContainer: (glassOpacityContainer + (other.glassOpacityContainer - glassOpacityContainer) * t),
+      editorialMaxWidth: (editorialMaxWidth + (other.editorialMaxWidth - editorialMaxWidth) * t),
+      sidebarWidth: (sidebarWidth + (other.sidebarWidth - sidebarWidth) * t),
     );
   }
 }
