@@ -72,8 +72,6 @@ build/web/
 .history/
 
 # FVM
-.fvm/flutter_sdk
-.fvm/fvm_config.json
 
 # AI Agents
 .agents/
@@ -82,3 +80,6 @@ build/web/
 .ai/
 fsm.json
 prompt.txt
+
+# FVM Version Cache
+.fvm/
