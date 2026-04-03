@@ -11,9 +11,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:get_it/get_it.dart' as _i174;
 import 'package:injectable/injectable.dart' as _i526;
-import 'package:llamadart/llamadart.dart' as _i234;
 import 'package:local_ai_chat/core/database/database_helper.dart' as _i1071;
-import 'package:local_ai_chat/core/di/injection.dart' as _i187;
 import 'package:local_ai_chat/core/services/meeting_summary_service.dart'
     as _i292;
 import 'package:local_ai_chat/core/services/platform_service.dart' as _i115;
@@ -40,24 +38,18 @@ extension GetItInjectableX on _i174.GetIt {
     _i526.EnvironmentFilter? environmentFilter,
   }) {
     final gh = _i526.GetItHelper(this, environment, environmentFilter);
-    final llamaModule = _$LlamaModule();
     gh.lazySingleton<_i1071.DatabaseHelper>(() => _i1071.DatabaseHelper());
     gh.lazySingleton<_i115.PlatformService>(() => _i115.PlatformService());
     gh.lazySingleton<_i42.SttService>(() => _i42.SttService());
-    gh.lazySingleton<_i234.LlamaEngine>(
-      () => llamaModule.llamaEngine(gh<_i115.PlatformService>()),
-    );
-    gh.lazySingleton<_i154.LlamaDataSource>(
-      () => _i154.LlamaDataSource(gh<_i234.LlamaEngine>()),
+    gh.lazySingleton<_i154.LlamaDataSource>(() => _i154.LlamaDataSource());
+    gh.lazySingleton<_i292.MeetingSummaryService>(
+      () => _i292.MeetingSummaryService(gh<_i154.LlamaDataSource>()),
     );
     gh.lazySingleton<_i426.ModelRepository>(
       () => _i1010.ModelRepositoryImpl(gh<_i115.PlatformService>()),
     );
     gh.lazySingleton<_i149.ChatLocalDataSource>(
       () => _i546.ChatLocalDataSourceImpl(gh<_i1071.DatabaseHelper>()),
-    );
-    gh.lazySingleton<_i292.MeetingSummaryService>(
-      () => _i292.MeetingSummaryService(gh<_i154.LlamaDataSource>()),
     );
     gh.lazySingleton<_i674.ChatRepository>(
       () => _i880.ChatRepositoryImpl(
@@ -68,5 +60,3 @@ extension GetItInjectableX on _i174.GetIt {
     return this;
   }
 }
-
-class _$LlamaModule extends _i187.LlamaModule {}
